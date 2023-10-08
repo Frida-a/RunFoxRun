@@ -14,7 +14,218 @@ Since Java5, you can even specify a variable number of arguments aka varargs whi
 Notice that the varargs parameter "String... strNickNames" must be listed last.  Calling this method would look something like this:
  String[] strReturnValues = someMethod(99, "Jim", "Jamie", "James", "Jamey", "Jimmy", "Jimbo");
 
+R5.8 Pseudocode
+Write pseudocode for a method that translates a telephone number with letters in it(such as 1-800-FLOWERS)into the actual phone number. Use standard letters on a phone pad.
 
+DEFINE translatePhoneNumber(inputPhoneNumber: STRING) -> STRING
+    phoneNumber = ""
+    FOR number IN inputPhoneNumber
+        IF number is a digit
+            APPEND number TO phoneNumber
+        ELSE // number is a letter
+            IF number is 'A', 'B', or 'C'
+                digit = '2'
+            ELSE IF number is 'D', 'E', or 'F'
+                digit = '3'
+            ELSE IF number is 'G', 'H', or 'I'
+                digit = '4'
+            ELSE IF number is 'J', 'K', or 'L'
+                digit = '5'
+            ELSE IF number is 'M', 'N', or 'O'
+                digit = '6'
+            ELSE IF number is 'P', 'Q', 'R', or 'S'
+                digit = '7'
+            ELSE IF number is 'T', 'U', or 'V'
+                digit = '8'
+            ELSE IF number is 'W', 'X', 'Y', or 'Z'
+                digit = '9'
+            APPEND digit TO phoneNumber
+        ENDIF
+    RETURN phoneNumber
+END FUNCTION
+
+R5.10 Variable scope
+
+in main function:
+int i's scope is line 5-7
+int b's scope is line 6-7
+
+in f function:
+int i's scope is line 10-14
+int n's scope is line 12-14
+
+in g function:
+int b's scope is line 19-25
+int n's scope is line 20-23
+int a's scope is line 17-25
+int i's scope is line 22-23
+
+program output:
+26
+
+R5.14 Pass by value versus pass by reference
+
+Because the function falseSwap get the contents of x and y by value instead of by reference.
+x and y are local variables within the scope of function main
+In function falseSwap, x and y passed in as local variable a and b. Then a and b were swapped instead of x and y.
+When function falseSwap ended, the local variable a and b were destroyed and x and y left unchanged.
+
+
+R6.3 Considering loops
+The value of total after the following loops complete:
+a.25
+b.13
+c.12
+d.22 (index out of bound)
+e.12
+f.25
+g.12
+h.-1
+
+R6.10 Enhanced for-loop
+a.for(float value : values){total = total + value;}
+b.
+int cnt = 0
+for(float value : values){
+    if (cnt != 0)
+        total = total + value;
+    cnt++;
+}
+c.
+int cnt = 0
+for(float value : values){
+    if (value == target){
+        return cnt;
+    }
+    cnt++;
+}
+
+
+R6.23 Computing runs
+
+DEFINE findLongestRun(array):
+    maxLength = 0
+    currentLength = 0
+    FOR EACH i FROM 0 TO array.length - 2:
+        IF array[i] equals array[i + 1]:
+            currentLength = currentLength + 1
+        ELSE:
+            IF currentLength > maxLength:
+                maxLength = currentLength
+            currentLength = 0
+        ENDIF
+    IF currentLength > maxLength:
+        maxLength = currentLength
+    ENDIF
+    RETURN maxLength
+END FUNCTION
+
+R6.29 Multi-dimensional arrays
+1.
+int[][] values = new int[ROWS][COLUMNS];
+for (int i=0; i<ROWS; i++){
+    for (int j=0; j<COLUMNS; j++){
+        values[i][j] = 0;
+    }
+}
+2.
+int[][] values = new int[ROWS][COLUMNS];
+for (int i=0; i<ROWS; i++){
+    for (int j=0; j<COLUMNS; j++){
+        if((i+j)%2==0){
+            values[i][j] = 0;
+        }
+        else{
+            values[i][j] = 1;
+        }
+    }
+}
+3.
+int[][] values = new int[ROWS][COLUMNS];
+for (int j=0; j<COLUMNS; j++){
+        values[0][j] = 0;
+}
+for (int j=0; j<COLUMNS; j++){
+        values[ROW-1][j] = 0;
+}
+4.
+int[][] values = new int[ROWS][COLUMNS];
+int total = 0
+for (int i=0; i<ROWS; i++){
+    for (int j=0; j<COLUMNS; j++){
+        total = total + values[i][j];
+    }
+}
+5.
+int[][] values = new int[ROWS][COLUMNS];
+for (int i=0; i<ROWS; i++){
+    for (int j=0; j<COLUMNS; j++){
+        System.out.print(values[i][j]+ "\t");
+    }
+    System.out.println();
+}
+
+R6.34 Understanding arrays
+a Ture
+b False
+c False
+d True
+e False
+f False
+
+R7.1 Exceptions
+If you read a file that doesn't exit, it will result in a FileNotFoundException.
+If you write a file that doesn't exit, and you open the file in the mode that appends to an existing file, a FileNotFoundException will be thrown.
+If you open the file in the mode that creates a new file, then Java will create a new file with the specified name if it doesn't exist. In this case, no exception will be thrown.
+
+R7.6 Throwing and catching
+Throwing an exception is used to signal exceptional conditions, while catching an exception is used to handle and recover from those exceptional conditions.
+
+Throwing an exception:
+When an exceptional situation occurs in a program, the code can explicitly throw an exception to indicate that something went wrong.
+This is done using the throw keyword followed by the instance of an exception class.
+Throwing an exception transfers the control from the current code block to the nearest compatible exception handler. It is a way to pass the responsibility of handling the exception to another part of the code.
+Throwing an exception allows you to identify and handle abnormal conditions, such as a division by zero, invalid input, or a network connection error.
+
+Catching an exception:
+Catching an exception is the process of handling and recovering from an exception that is thrown by another part of the code.
+It is done using the try-catch block. The code that may throw an exception is enclosed within the try block, and the exception is caught and handled within the catch block.
+The catch block specifies the type of exception that it can handle. If an exception of that type is thrown within the try block, the catch block is executed.
+Catching an exception allows you to control how the program responds to exceptional situations, providing error messages, performing alternative actions, or gracefully terminating the program.
+
+R7.7 Checked versus unchecked
+
+Checked exceptions:
+Checked exceptions are exceptions that are checked at compile time.
+If a method throws a checked exception, it must either handle the exception using a try-catch block or specify the exception in the method signature using the throws keyword.
+Checked exceptions are typically recoverable and require the programmer to take explicit action to handle them.
+Examples of checked exceptions in Java include IOException, SQLException, FileNotFoundException, and ClassNotFoundException.
+
+Unchecked exceptions:
+Unchecked exceptions are exceptions that are not checked by the compiler at compile time.
+Unchecked exceptions are typically caused by programming errors such as invalid arguments, null pointers, or arithmetic overflows.
+Unchecked exceptions do not need to be declared with the throws keyword and can be handled using try-catch blocks or left uncaught.
+Examples of unchecked exceptions in Java include NullPointerException, ArrayIndexOutOfBoundsException, ArithmeticException, and IllegalArgumentException.
+
+R7.8 Exceptions philosophy in Java
+Because IndexOutOfBoundsException is considered an unchecked exception.
+Unchecked exceptions are exceptions that do not need to be declared using the throws keyword in the method signature or be caught using a catch block.
+
+R7.11 What is an exception object
+Some common actions you can perform with the exception object include:
+
+1.Printing or logging the exception information: You can obtain details about the exception such as the error message, stack trace, and other relevant information.
+2.Displaying custom error messages: Instead of printing the default error message, you can create custom error messages based on the exception type or specific conditions.
+3.Handling or recovering from the exception: Depending on the type of exception and the nature of your program, this may involve providing an alternative solution, retrying the failed operation, or taking other appropriate measures.
+4.Rethrowing the exception: In some cases, you may decide not to handle the exception within the catch block but instead propagate it further up the call stack. This allows higher-level parts of your program to handle the exception or pass it along until it reaches an appropriate exception handler.
+5.Cleaning up resources: Inside a catch block, you can write code to release any acquired resources or perform cleanup operations. This ensures that resources are properly managed even in the presence of exceptions.
+
+R7.15 Scanner exceptions. Explain why these are either checked or unchecked.
+In Java, the next() and nextInt() methods of the Scanner class can throw the following exceptions:
+NoSuchElementException: This exception is thrown by the next() and nextInt() methods if there are no more tokens available to be read from the input.
+IllegalStateException: This exception is thrown by the next() and nextInt() methods if they are called without first checking if there is a token available using the hasNext() or hasNextInt() methods.
+
+They are unchecked exceptions, because they do not need to be declared in a method's throws clause and do not require explicit handling.
 
 
 
