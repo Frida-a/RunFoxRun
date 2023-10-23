@@ -2,8 +2,99 @@
 # Use this file to answer Review Exercises from the Big Java textbook
 #########################################################################
 
+R9.1 Superclass and subclass
+
+a. Superclass: Employee; subclass: Manager
+b. Superclass: Student; subclass: GraduateStudent
+c. Superclass: Person; subclass: Student
+d. Superclass: Employee; subclass: Professor
+e. Superclass: BankAccount; subclass: CheckingAccount
+f. Superclass: Vehicle; subclass: Car
+g. Superclass: Vehicle; subclass: Minivan
+h. Superclass: Car; subclass: Minivan
+i. Superclass: Vehicle; subclass: Truck
 
 
+R9.2 superclass and subclass
 
+In most cases, these different types of appliances would have limited common functionality.
+Having multiple subclasses for each specific appliance type might lead to increased code complexity and maintenance.
+Each subclass would need to handle its unique behavior and attributes, which can make the codebase more difficult to manage and understand.
 
+R9.4 SavingsAccount
 
+inherit:
+public void deposit(double amount)
+public void withdraw(double amount)
+public void monthEnd()
+public double getBalance()
+
+override:
+public void withdraw(double amount)
+public void monthEnd()
+
+add:
+public void setInterestRate(double rate)
+
+R9.6 Sandwich
+a. legal
+b. not legal
+c. not legal
+d. legal
+
+R9.7 Inheretence -use the UML diagram tool in IntelliJ and indicate to the grader where uml file is located
+src/main/java/edu/uchicago/gerber/_04interfaces/diagram/R9_7.png
+
+R9.8 Inheretence -use the UML diagram tool in IntelliJ and indicate to the grader where uml file is located
+src/main/java/edu/uchicago/gerber/_04interfaces/diagram/R9_8.png
+
+R9.9 Inheretence -use the UML diagram tool in IntelliJ and indicate to the grader where uml file is located
+src/main/java/edu/uchicago/gerber/_04interfaces/diagram/R9_9.png
+
+R9.10 Casting
+
+1. Casting Java Classes:
+   - used to treat an object `x` as an instance of the `BankAccount` class, or one of its subclasses.
+   It is typically used when you have a reference of a superclass type, but you want to treat it as an instance of a subclass.
+
+2. Casting Number Values:
+   - `(int) x` is used to convert the value of `x` to the `int` data type.
+   It is typically used when you need to explicitly convert a value to a different numeric type.
+   For example, if `x` is a `double`, casting it to an `int` will remove the decimal part and keep only the whole number.
+
+The main difference is that casting Java classes is about changing the reference type, allowing you to access the methods and fields specific to that class or its subclasses.
+On the other hand, casting number values is about converting the value itself to a different numeric type.
+
+R9.11 instanceof operaton
+
+the conditions that return true are:
+a. System.out instanceof PrintStream d. System.out instanceof Object
+System.out is an object of the PrintStream class and all objects are instances of the Object class.
+
+R9.14 Edible interface
+
+a. e = sub;
+This is legal.
+
+b. sub = e;
+This is not legal because the variable 'e' of type Edible cannot be assigned to a variable 'sub' of type Sandwich without a cast.
+
+c. sub = (Sandwich) e;
+This assignment is legal with a type cast because the explicit casting informs the compiler that e is indeed referencing a Sandwich object.
+
+d. sub = (Sandwich) cerealBox;
+This is not legal because the variable 'cerealBox' of type Rectangle cannot be cast to type Sandwich.
+
+e. e = cerealBox;
+This is not legal because the variable 'e' of type Edible cannot be assigned to a variable 'cerealBox' of type Rectangle without a cast.
+
+f. e = (Edible) cerealBox;
+This assignment is not legal because a Rectangle object (cerealBox) cannot be directly cast to an Edible object, it may confuse the compiler but would fail if there's no Edible class that extend Rectangle.
+
+g. e = (Rectangle) cerealBox;
+This is similar to f and not legal, as cerealBox cannot be cast to Rectangle assuming Rectangle is not a superclass of Edible.
+
+h. e = (Rectangle) null;
+This is not legal because, although null can be cast to any type, it is not legal to assign a Rectangle to an Edible.
+
+In summary, the legal assignment statements are a and c.
