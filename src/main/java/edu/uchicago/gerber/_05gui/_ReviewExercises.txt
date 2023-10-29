@@ -2,8 +2,118 @@
 # Use this file to answer Review Exercises from the Big Java textbook
 #########################################################################
 
+R10.5 Events
+
+An event object is an instance of a class that represents an event occurrence.
+It contains information about the event and can be used to pass data from the event source to the event listener.
+
+An event source, on the other hand, is an object that generates events.
+It is responsible for notifying the registered event listeners when an event occurs.
+Examples of event sources in Java include buttons, text fields, and timers.
+
+An event listener is an interface or a class that defines the methods that handle events.
+It is responsible for receiving and processing events from the event source.
+To listen to events, you need to implement the appropriate listener interface and register the listener with the event source.
+
+R10.6 actionPerformed
+
+The actionPerformed method of an event listener is typically called by the event dispatch thread (EDT).
+The EDT is a dedicated thread responsible for handling events in a Java Swing application.
+
+The call to the actionPerformed method occurs when the event that the listener is registered for takes place.
+For example, if you have registered an ActionListener on a button, the actionPerformed method will be called when the button is clicked.
+When the event occurs, the event source (such as a button) detects the event and notifies the EDT.
+The EDT then dispatches the event to the appropriate listener by calling the corresponding actionPerformed method.
+
+R10.11 Inner class and event-listeners
+
+Inner classes is used for event listeners in Java for several reasons:
+1.Encapsulation: Inner classes allow us to define the event listener class within the scope of the class that uses it.
+This provides better encapsulation, as the event listener is closely related to the class it listens to, and it can access the private members of the outer class if needed.
+2.Code Organization: Inner classes contribute to better code organization, as they keep related classes together.
+It helps improve readability and maintainability of the codebase.
+
+If Java didn't have inner classes, we could still implement event listeners using other mechanisms, such as:
+1.Anonymous classes: Rather than defining a separate named inner class for an event listener, we can create an anonymous class right where the listener is registered.
+2.Lambda expressions: In Java 8 and later versions, lambda expressions provide a compact syntax for implementing functional interfaces like ActionListener.
 
 
+R10.14 Object hierarchies
+A method declared in JTextArea:
+append(String str)
+A method that JTextArea inherits from JTextComponent:
+getText()
+A method that JTextArea inherits from JComponent:
+setPreferredSize(Dimension preferredSize)
 
+R10.22 Graphic methods
 
+Wrap up a function that takes in left and right color as parameter:
+public void drawFlag(Graphics g, Color leftColor, Color rightColor) {
+    int width = 30;
+    int height = 60;
+    int startX = 100;
+    int startY = 100;
 
+    g.setColor(leftColor);
+    g.fillRect(startX, startY, width, height);
+
+    g.setColor(rightColor);
+    g.fillRect(startX + width + 30, startY, width, height);
+
+    g.setColor(Color.WHITE);
+    g.fillRect(startX + width, startY, 30, height);
+}
+
+R11.2 Layout managers
+1.Platform Independence: Layout managers consider factors such as screen size, screen resolution, and font size, ensuring that the components are appropriately positioned and scaled for different environments.
+2.Dynamic Component Resizing: Layout managers handle component resizing automatically.
+3.Ease of Maintenance: Layout managers simplify the maintenance of the user interface.
+4.Responsive Design: Layout managers support responsive design principles, enabling the user interface to adapt to different screen sizes and orientations.
+
+R11.11 ButtonGroup
+ButtonGroup ensures that only one radio button within the group can be selected at a time by managing their mutually exclusive behavior.
+When a radio button is selected, other radio buttons in the same ButtonGroup are automatically deselected.
+This behavior is useful in situations where you want to present a list of options to the user and allow them to choose only one option.
+For example, selecting a gender (male/female) or selecting a single answer from a multiple-choice question.
+
+Check boxes, on the other hand, do not require a ButtonGroup because they are designed to allow the user to select multiple options independently.
+Each check box represents an independent selection. The user can select any number of check boxes based on their preference or requirement.
+
+R11.19 Types of Events
+
+ActionEvent: represents a high-level, semantic event that typically occurs as a result of user action on a GUI component,
+such as clicking a button, selecting an item from a menu, or pressing the Enter key.
+ActionEvents are associated with components that generate action events, such as buttons, menu items, or text fields.
+
+MouseEvent: represents a lower-level event that is triggered by user interaction with a GUI component using the mouse.
+It includes actions such as clicking, pressing, releasing, dragging, and moving the mouse pointer.
+MouseEvent provides information about the location of the mouse pointer, the button that was pressed or released, and other relevant mouse information.
+
+R11.20 Events
+
+An ActionEvent provides the following information:
+1.Event Source: The object that generated the event can be obtained from the getSource() method.
+2.Event Command: The command string associated with the action, which helps identify the type of action being performed. It can be retrieved using the getActionCommand() method.
+3.Event Timestamp: The time at which the event occurred can be obtained using the getWhen() method.
+4.Event Modifiers: Any modifier keys (Ctrl, Shift, Alt) that were pressed during the action can be retrieved using the getModifiers() method.
+
+A MouseEvent object carries the following additional information:
+1.Event Location: The coordinates (x, y) of the mouse pointer at the time of the event can be accessed using getX() and getY() methods.
+2.Event Button: The button involved in the action, such as the left, right, or middle mouse button, can be obtained with the getButton() method.
+3.Event Click Count: For actions like mouse clicks, the number of consecutive clicks can be retrieved using the getClickCount() method.
+4.Event Modifiers: Any modifier keys (Ctrl, Shift, Alt) that were pressed during the mouse action can be obtained using the getModifiers() method.
+
+R11.21 ActionListener versus MouseListener
+
+The ActionListener interface in Java has only one method, actionPerformed(ActionEvent e),
+because it is designed to handle simple actions triggered by user interactions with GUI components,
+such as clicking a button or selecting an item from a menu.
+The purpose of ActionListener is to provide a callback when an action event occurs.
+
+On the other hand, the MouseListener interface has five methods because it is more versatile and handles various mouse-related events.
+These events include mouse clicks, mouse presses, mouse releases, mouse enters, and mouse exits.
+The five methods in the MouseListener interface allow you to respond to different types of mouse events separately.
+
+Additionally, the MouseListener interface also includes two additional interfaces: MouseMotionListener and MouseWheelListener.
+These interfaces have additional methods to handle mouse motion events (such as mouse dragging) and mouse wheel events, respectively.
