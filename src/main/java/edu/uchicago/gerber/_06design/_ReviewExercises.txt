@@ -2,8 +2,211 @@
 # Use this file to answer Review Exercises from the Big Java textbook
 #########################################################################
 
+R12.1 OO Analysis and Design
+List the steps in the process of object-oriented design that this chapter recommends
+for student use.
+1.Start the development process by gathering and documenting program requirements.
+2.Use CRC cards to find classes, responsibilities, and collaborators.
+3.Use UML diagrams to record class relationships.
+4.Use javadoc comments (with the method bodies left blank) to record the behavior of classes.
+5.After completing the design, implement your classes
+
+R12.2 OO Analysis and Design
+Give a rule of thumb for how to find classes when designing a program.
+To discover classes, look for nouns in the problem description.
+
+R12.3 OO Analysis and Design
+Give a rule of thumb for how to find methods when designing a program.
+To discover methods of classes, look for verbs related to nouns in the problem description.
+
+R12.8 Relationships
+Write CRC cards for the Coin and CashRegister classes described in Section 12.1.3.
+
+Class: Coin
+
+Responsibilities    Collaborators
+Represent a coin    None
+Store value         None
+Provide value       None
+Provide name        None
+
+Class: CashRegister
+
+Responsibilities    Collaborators
+Process payment     Coin
+Enter payment       Coin
+Calculate total     Coin
+Provide total       None
+Maintain record     None
+
+R12.9 CRC Quiz
+Write CRC cards for the Quiz and Question classes in Section 12.2.2.
+Class: Quiz
+
+Responsibilities    Collaborators
+Store questions     Question
+Retrieve questions  None
+Add questions       Question
+Remove questions    Question
+Manage quiz state   None
+
+Class: Question
+Responsibilities            Collaborators
+Store question text         None
+Store answer choices        None
+Store correct answer        None
+Retrieve question           None
+Retrieve answer choices     None
+Check answer correctness    None
+
+R12.10 UML Quiz
+Draw a UML diagram for the Quiz, Question, and ChoiceQuestion classes. The Quiz class
+is described in Section 12.2.2.
+
+ULM diagram path: ./ULM.jpg
+
+R12.11 CRC Cards
+A file contains a set of records describing countries. Each record consists of the name
+of the country, its population, and its area. Suppose your task is to write a program
+that reads in such a file and prints
+• The country with the largest area.
+• The country with the largest population.
+• The country with the largest population density (people per square kilometer).
+Think through the problems that you need to solve. What classes and methods will
+you need? Produce a set of CRC cards, a UML diagram, and a set of javadoc
+comments.
+
+CRC Cards:
+
+Class: CountryRecord
+Responsibilities:
+Store the name, population, and area of a country
+Provide access to the stored information
+Collaborators: None
+
+Class: FileReader
+Responsibilities:
+Read data from a file
+Transform the data into CountryRecord objects
+Collaborators: CountryRecord
+
+Class: CountryAnalyzer
+Responsibilities:
+Find the country with the largest area
+Find the country with the largest population
+Find the country with the largest population density
+Collaborators: CountryRecord
+
+ULM diagram path: ./ULM.jpg
+
+Java Doc:
+/**
+ * Represents a country record that stores the name, population, and area of a country.
+ */
+public class CountryRecord {
+    private String name;
+    private int population;
+    private double area;
+
+    // Constructors, getters, and other methods
+}
+
+/**
+ * Reads data from a file and transforms it into a list of CountryRecord objects.
+ */
+public class FileReader {
+    private File file;
+
+    /**
+     * Reads the records from the specified file.
+     * @param filePath The path of the file to read.
+     * @return A list of CountryRecord objects read from the file.
+     */
+    public List<CountryRecord> readRecords(String filePath) {
+        // Implementation details
+    }
+}
+
+/**
+ * Analyzes a list of country records and finds the country with the largest area, population, and population density.
+ */
+public class CountryAnalyzer {
+    /**
+     * Finds the country with the largest area from the given list of records.
+     * @param records The list of country records to analyze.
+     * @return The country record with the largest area.
+     */
+    public CountryRecord findLargestArea(List<CountryRecord> records) {
+        // Implementation details
+    }
+
+    /**
+     * Finds the country with the largest population from the given list of records.
+     * @param records The list of country records to analyze.
+     * @return The country record with the largest population.
+     */
+    public CountryRecord findLargestPopulation(List<CountryRecord> records) {
+        // Implementation details
+    }
+
+    /**
+     * Finds the country with the largest population density from the given list of records.
+     * @param records The list of country records to analyze.
+     * @return The country record with the largest population density.
+     */
+    public CountryRecord findLargestPopulationDensity(List<CountryRecord> records) {
+        // Implementation details
+    }
+}
 
 
+R12.13 UML Diagram
+Consider the following problem description:
+Users place coins in a vending machine and select a product by pushing a button. If the inserted coins
+are sufficient to cover the purchase price of the product, the product is dispensed and change is given.
+Otherwise, the inserted coins are returned to the user.
+What classes should you use to implement a solution?
 
+1.VendingMachine:
+This class is responsible for managing the products, handling coin inputs, dispensing products, and giving change.
+It would contain methods like insertCoin(), selectProduct(), dispenseProduct(), and giveChange().
 
+2.Product:
+This class represents a product available in the vending machine.
+It would have attributes like name, price, and methods like getName(), getPrice().
 
+3.Coin:
+This class represents a coin that can be inserted into the vending machine.
+It would have attributes like value, type, and methods like getValue(), getType().
+
+4.User:
+This class represents the user interacting with the vending machine.
+It may have attributes like insertedCoins, selectedProduct, and methods like insertCoin(), selectProduct().
+
+R12.14 UML Diagram
+Consider the following problem description:
+Employees receive their biweekly paychecks. They are paid their hourly rates for each hour worked;
+however, if they worked more than 40 hours per week, they are paid overtime at 150 percent of their
+regular wage.
+What classes should you use to implement a solution?
+1.Employee:
+This class represents an employee and is responsible for storing information like their name, hourly rate, and hours worked.
+It would have methods like getName(), getHourlyRate(), getHoursWorked().
+
+2.TimeSheet:
+This class represents the time sheet for an employee and is responsible for storing the hours worked by the employee.
+It would have methods like addHoursWorked(int hours), getTotalHoursWorked().
+
+3.PayrollCalculator:
+This class is responsible for calculating the wages for an employee based on their hourly rate and hours worked.
+It would have methods like calculateRegularWage(double hourlyRate, int hoursWorked), calculateOvertimeWage(double hourlyRate, int hoursWorked).
+
+R12.15 ULM Diagram
+Consider the following problem description:
+Customers order products from a store. Invoices are generated to list the items and quantities ordered,
+payments received, and amounts still due. Products are shipped to the shipping address of the
+customer, and invoices are sent to the billing address.
+Draw a UML diagram showing the aggregation relationships between the classes
+Invoice, Address, Customer, and Product.
+
+ULM diagram path: ./ULM.jpg
