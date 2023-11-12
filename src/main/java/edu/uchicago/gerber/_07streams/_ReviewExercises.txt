@@ -3,6 +3,74 @@
 #########################################################################
 
 
+R13.1 Terms
+
+a. Recursion:
+Recursion is a programming technique in which a method can call itself to solve a problem.
+Recursion is often used to solve problems that can be broken down into smaller, similar subproblems.
+
+b. Iteration:
+Iteration refers to the process of repeating a set of operations in a loop.
+Iteration is typically achieved using constructs like for loops, while loops, or do-while loops.
+
+c. Infinite recursion:
+Infinite recursion occurs when a recursive method does not have a base case or stopping condition.
+As a result, the method continues to call itself indefinitely, leading to a stack overflow error.
+
+d. Recursive helper method:
+A recursive helper method is a secondary method used to aid the primary recursive method.
+It is often used to perform the actual recursive work by handling the recursive calls and managing additional parameters or data.
+
+R13.2 Smallest value
+
+1.Define a recursive function —— findSmallestValue, that takes the array and the current index as parameters.
+
+2.In the recursive function, check if the current index is at the end of the array, which is the base case of the recursion.
+If it is, return the value at that index as the smallest value.
+
+3.If the current index is not at the end of the array, recursively call the findSmallestValue function with the array and the next index.
+
+4.During the recursive calls, compare the value returned from the recursive call with the value at the current index and return the smaller of the two.
+
+R13.4 Sort array of numbers
+
+1.Define a recursive function —— recursiveSort, that takes the array as a parameter.
+
+2.The base case. If the array has only one element or is empty, it is already sorted, so it can be returned as is.
+
+3.If the array has more than one element, find the index of the smallest value in the array using a separate recursive function.
+This recursive function will find the smallest value in a given sub-array.
+
+4.Once the index of the smallest value is found within the array, swap the element at that index with the first element of the sub-array.
+
+5.Now, recursively call the recursiveSort function on the sub-array that starts from the second element. This will sort the sub-array excluding the first element, which now holds the smallest value.
+
+6.Finally, return the updated array after the recursive call.
+
+R13.6 Exponents recursively
+
+recursive definition of x^n:
+
+Base Case:
+If n = 0, then x^0 = 1.
+Recursive Case:
+If n > 0, then x^n = x * x^(n-1), where x is a given constant.
+Termination:
+The recursion terminates when n reaches 0, at which point the base case is satisfied and x0 is equal to 1.
+
+R13.8 Factorial recursively
+Base Case:
+If n = 0, then n! = 1.
+Recursive Case:
+If n > 0, then n! = n * (n-1)!, where (n-1)! denotes the factorial of (n-1).
+Termination:
+The recursion continues until the base case is satisfied, at which point 0! equals 1.
+
+R19.1 operations on Stream<String>
+R19.3 How to read Java8
+R19.6 Transforming values
+R19.11 Terminal operations
+R19.12 Collectors
 
 
 
