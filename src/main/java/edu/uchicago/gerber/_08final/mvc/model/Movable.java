@@ -4,17 +4,16 @@ import java.awt.*;
 
 public interface Movable {
 
-	enum Team {FRIEND, FOE, FLOATER, DEBRIS}
+	enum Team {FRIEND, FOE, LAND, COIN}
 
 	//for the game to move and draw movable objects. See the GamePanel class.
 	void move();
 	void draw(Graphics g);
 
 	//for collision detection
-	Point getCenter();
-	int getRadius();
-	Team getTeam();
+	Rectangle[] getBounds();
 	boolean isProtected();
+	Team getTeam();
 
 
 } //end Movable

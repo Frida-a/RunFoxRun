@@ -2,6 +2,7 @@ package edu.uchicago.gerber._08final.mvc.controller;
 
 import edu.uchicago.gerber._08final.mvc.model.*;
 import edu.uchicago.gerber._08final.mvc.view.GamePanel;
+import edu.uchicago.gerber._08final_ref.mvc.model.ShieldFloater;
 
 
 import javax.sound.sampled.Clip;
@@ -42,7 +43,7 @@ public class Game implements Runnable, KeyListener {
             RIGHT = 39, // rotate right; right arrow
             UP = 38, // thrust; up arrow
             START = 83, // s key
-            FIRE = 32, // space key
+            JUMP = 32, // space key
             MUTE = 77, // m-key mute
 
             NUKE = 78; // n-key mute
@@ -105,7 +106,7 @@ public class Game implements Runnable, KeyListener {
 
             checkCollisions();
             checkNewLevel();
-            checkFloaters();
+            checkObstacles();
 
             //keep track of the frame for development purposes
             CommandCenter.getInstance().incrementFrame();
@@ -127,10 +128,48 @@ public class Game implements Runnable, KeyListener {
         } // end while
     } // end run
 
-    private void checkFloaters() {
-        spawnNewWallFloater();
-        spawnShieldFloater();
-        spawnNukeFloater();
+    private void checkObstacles(){
+        spawnNewObstacles();
+    }
+
+    private void spawnNewObstacles(){
+        if (CommandCenter.getInstance().getFrame() % Obstacle.SPAWN_NEW_OBSTACLE == 0) {
+            Random r = new Random();
+            int type = (r.nextInt()% 5) ;
+            if(type < 0){// 50% chance of adding no obstacles
+                return;
+            }
+            System.out.println("obs type is: "+ type);
+            int centerX = 1099, centerY = 0, imgWidth = 100, imgHeight = 200;
+            switch (type){
+                case 0:
+                    centerY = 650;
+                    imgWidth = 42;
+                    imgHeight = 111;
+                    break;
+                case 1:
+                    centerY = 650;
+                    imgWidth = 45;
+                    imgHeight = 117;
+                    break;
+                case 2:
+                    centerY = 683;
+                    imgWidth = 80;
+                    imgHeight = 51;
+                    break;
+                case 3:
+                    centerY = 685;
+                    imgWidth = 77;
+                    imgHeight = 48;
+                    break;
+                case 4:
+                    centerY = 690;
+                    imgWidth = 64;
+                    imgHeight = 38;
+                    break;
+            }
+            CommandCenter.getInstance().getOpsQueue().enqueue(new Obstacle(new Point(centerX, centerY), imgWidth,imgHeight, type), GameOp.Action.ADD);
+        }
     }
 
 
@@ -140,70 +179,7 @@ public class Game implements Runnable, KeyListener {
         int radFriend, radFoe;
 
         //This has order-of-growth of O(n^2), there is no way around this.
-        for (Movable movFriend : CommandCenter.getInstance().getMovFriends()) {
-            for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
-
-                pntFriendCenter = movFriend.getCenter();
-                pntFoeCenter = movFoe.getCenter();
-                radFriend = movFriend.getRadius();
-                radFoe = movFoe.getRadius();
-
-                //detect collision
-                if (pntFriendCenter.distance(pntFoeCenter) < (radFriend + radFoe)) {
-                    //remove the friend (so long as he is not protected)
-                    if (!movFriend.isProtected()) {
-                        CommandCenter.getInstance().getOpsQueue().enqueue(movFriend, GameOp.Action.REMOVE);
-                    }
-
-                    //remove the foe
-                    CommandCenter.getInstance().getOpsQueue().enqueue(movFoe, GameOp.Action.REMOVE);
-
-                    if (movFoe instanceof Brick) {
-                        CommandCenter.getInstance().setScore(CommandCenter.getInstance().getScore() + 1000);
-                        Sound.playSound("rock.wav");
-                    } else {
-                        CommandCenter.getInstance().setScore(CommandCenter.getInstance().getScore() + 10);
-                        Sound.playSound("kapow.wav");
-                    }
-                }
-
-            }//end inner for
-        }//end outer for
-
-        //check for collisions between falcon and floaters. Order of growth of O(n) where n is number of floaters
-        Point pntFalCenter = CommandCenter.getInstance().getFalcon().getCenter();
-        int radFalcon = CommandCenter.getInstance().getFalcon().getRadius();
-
-        Point pntFloaterCenter;
-        int radFloater;
-        for (Movable movFloater : CommandCenter.getInstance().getMovFloaters()) {
-            pntFloaterCenter = movFloater.getCenter();
-            radFloater = movFloater.getRadius();
-
-            //detect collision
-            if (pntFalCenter.distance(pntFloaterCenter) < (radFalcon + radFloater)) {
-
-                Class<? extends Movable> clazz = movFloater.getClass();
-                switch (clazz.getSimpleName()) {
-                    case "ShieldFloater":
-                        Sound.playSound("shieldup.wav");
-                        CommandCenter.getInstance().getFalcon().setShield(Falcon.MAX_SHIELD);
-                        break;
-                    case "NewWallFloater":
-                        Sound.playSound("insect.wav");
-                        buildWall();
-                        break;
-                    case "NukeFloater":
-                        Sound.playSound("nuke-up.wav");
-                        CommandCenter.getInstance().getFalcon().setNukeMeter(Falcon.MAX_NUKE);
-                        break;
-                }
-                CommandCenter.getInstance().getOpsQueue().enqueue(movFloater, GameOp.Action.REMOVE);
-
-
-            }//end if
-        }//end for
-
+        //TODO collision between Friend and Foe
         processGameOpsQueue();
 
     }//end meth
@@ -219,165 +195,45 @@ public class Game implements Runnable, KeyListener {
 
         //deferred mutation: these operations are done AFTER we have completed our collision detection to avoid
         // mutating the movable linkedlists while iterating them above.
-        while (!CommandCenter.getInstance().getOpsQueue().isEmpty()) {
+
+
+        while(!CommandCenter.getInstance().getOpsQueue().isEmpty()){
             GameOp gameOp = CommandCenter.getInstance().getOpsQueue().dequeue();
             Movable mov = gameOp.getMovable();
             GameOp.Action action = gameOp.getAction();
 
             switch (mov.getTeam()) {
-                case FOE:
-                    if (action == GameOp.Action.ADD) {
-                        CommandCenter.getInstance().getMovFoes().add(mov);
-                    } else { //GameOp.Operation.REMOVE
-                        CommandCenter.getInstance().getMovFoes().remove(mov);
-                        if (mov instanceof Asteroid) spawnSmallerAsteroidsOrDebris((Asteroid) mov);
-                    }
-
-                    break;
                 case FRIEND:
                     if (action == GameOp.Action.ADD) {
+                        System.out.println("Fox to add");
                         CommandCenter.getInstance().getMovFriends().add(mov);
                     } else { //GameOp.Operation.REMOVE
-                        if (mov instanceof Falcon) {
-                            CommandCenter.getInstance().initFalconAndDecrementFalconNum();
+                        System.out.println("Fox removed from queue");
+                        if (mov instanceof Fox) {
+                            CommandCenter.getInstance().initFoxAndDecrementNumb();
                         } else {
                             CommandCenter.getInstance().getMovFriends().remove(mov);
                         }
                     }
                     break;
-
-                case FLOATER:
-                    if (action == GameOp.Action.ADD) {
-                        CommandCenter.getInstance().getMovFloaters().add(mov);
-                    } else { //GameOp.Operation.REMOVE
-                        CommandCenter.getInstance().getMovFloaters().remove(mov);
+                case FOE:
+                    if (action == GameOp.Action.ADD){
+                        System.out.println("FOE to add");
+                        CommandCenter.getInstance().getMovFoes().add(mov);
+                    }else{
+                        System.out.println("FOE removed from queue");
+                        CommandCenter.getInstance().getMovFoes().remove(mov);
                     }
-                    break;
-
-                case DEBRIS:
-                    if (action == GameOp.Action.ADD) {
-                        CommandCenter.getInstance().getMovDebris().add(mov);
-                    } else { //GameOp.Operation.REMOVE
-                        CommandCenter.getInstance().getMovDebris().remove(mov);
-                    }
-                    break;
 
 
             }
-
-        }
-    }
-
-    //shows how to add walls or rectangular elements one brick at a time
-    private void buildWall() {
-        final int BRICK_SIZE = Game.DIM.width / 30, ROWS = 2, COLS = 20, X_OFFSET = BRICK_SIZE * 5, Y_OFFSET = 50;
-
-        for (int nCol = 0; nCol < COLS; nCol++) {
-            for (int nRow = 0; nRow < ROWS; nRow++) {
-                CommandCenter.getInstance().getOpsQueue().enqueue(
-                        new Brick(
-                                new Point(nCol * BRICK_SIZE + X_OFFSET, nRow * BRICK_SIZE + Y_OFFSET),
-                                BRICK_SIZE),
-                        GameOp.Action.ADD);
-
-            }
         }
     }
 
 
-    private void spawnNewWallFloater() {
-
-        if (CommandCenter.getInstance().getFrame() % NewWallFloater.SPAWN_NEW_WALL_FLOATER == 0 && isBrickFree()) {
-            CommandCenter.getInstance().getOpsQueue().enqueue(new NewWallFloater(), GameOp.Action.ADD);
-        }
-    }
-
-    private void spawnShieldFloater() {
-
-        if (CommandCenter.getInstance().getFrame() % ShieldFloater.SPAWN_SHIELD_FLOATER == 0) {
-            CommandCenter.getInstance().getOpsQueue().enqueue(new ShieldFloater(), GameOp.Action.ADD);
-        }
-    }
-
-    private void spawnNukeFloater() {
-
-        if (CommandCenter.getInstance().getFrame() % NukeFloater.SPAWN_NUKE_FLOATER == 0) {
-            CommandCenter.getInstance().getOpsQueue().enqueue(new NukeFloater(), GameOp.Action.ADD);
-        }
-    }
-
-
-    //this method spawns new Large (0) Asteroids
-    private void spawnBigAsteroids(int num) {
-        while (num-- > 0) {
-            //Asteroids with size of zero are big
-            CommandCenter.getInstance().getOpsQueue().enqueue(new Asteroid(0), GameOp.Action.ADD);
-
-        }
-    }
-
-    private void spawnSmallerAsteroidsOrDebris(Asteroid originalAsteroid) {
-
-        int size = originalAsteroid.getSize();
-        //small asteroids
-        if (size > 1) {
-            CommandCenter.getInstance().getOpsQueue().enqueue(new WhiteCloudDebris(originalAsteroid), GameOp.Action.ADD);
-        }
-        //med and large
-        else {
-            //for large (0) and medium (1) sized Asteroids only, spawn 2 or 3 smaller asteroids respectively
-            //We can use the existing variable (size) to do this
-            size += 2;
-            while (size-- > 0) {
-                CommandCenter.getInstance().getOpsQueue().enqueue(new Asteroid(originalAsteroid), GameOp.Action.ADD);
-            }
-        }
-
-    }
-
-    private boolean isBrickFree() {
-        //if there are no more Bricks on the screen
-        boolean brickFree = true;
-        for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
-            if (movFoe instanceof Brick) {
-                brickFree = false;
-                break;
-            }
-        }
-        return brickFree;
-    }
-
-    private boolean isLevelClear() {
-        //if there are no more Asteroids on the screen
-        boolean asteroidFree = true;
-        for (Movable movFoe : CommandCenter.getInstance().getMovFoes()) {
-            if (movFoe instanceof Asteroid) {
-                asteroidFree = false;
-                break;
-            }
-        }
-        return asteroidFree;
-    }
 
     private void checkNewLevel() {
 
-        if (isLevelClear()) {
-            //currentLevel will be zero at beginning of game
-            int level = CommandCenter.getInstance().getLevel();
-            //award some points for having cleared the previous level
-            CommandCenter.getInstance().setScore(CommandCenter.getInstance().getScore() + (10_000L * level));
-            //bump the level up
-            level = level + 1;
-            CommandCenter.getInstance().setLevel(level);
-            //spawn some big new asteroids
-            spawnBigAsteroids(level);
-            //make falcon invincible momentarily in case new asteroids spawn on top of him, and give player
-            //time to adjust to new asteroids in game space.
-            CommandCenter.getInstance().getFalcon().setShield(Falcon.INITIAL_SPAWN_TIME);
-            //show "Level X" in middle of screen
-            CommandCenter.getInstance().getFalcon().setShowLevel(Falcon.INITIAL_SPAWN_TIME);
-
-        }
     }
 
 
@@ -392,9 +248,8 @@ public class Game implements Runnable, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        Falcon falcon = CommandCenter.getInstance().getFalcon();
         int keyCode = e.getKeyCode();
-
+        Fox fox = CommandCenter.getInstance().getFox();
         if (keyCode == START && CommandCenter.getInstance().isGameOver()) {
             CommandCenter.getInstance().initGame();
             return;
@@ -402,6 +257,12 @@ public class Game implements Runnable, KeyListener {
 
 
         switch (keyCode) {
+            case JUMP:
+                System.out.println("JUMP pressed");
+                fox.setCurrentState("JUMPING");
+                fox.setDeltaY(-fox.getMaxSpeed());
+                Sound.playSound("thump.wav");
+                break;
             case PAUSE:
                 CommandCenter.getInstance().setPaused(!CommandCenter.getInstance().isPaused());
                 if (CommandCenter.getInstance().isPaused()) stopLoopingSounds(soundBackground, soundThrust);
@@ -409,22 +270,6 @@ public class Game implements Runnable, KeyListener {
             case QUIT:
                 System.exit(0);
                 break;
-            case UP:
-                falcon.setThrusting(true);
-                soundThrust.loop(Clip.LOOP_CONTINUOUSLY);
-                break;
-            case LEFT:
-                falcon.setTurnState(Falcon.TurnState.LEFT);
-                break;
-            case RIGHT:
-                falcon.setTurnState(Falcon.TurnState.RIGHT);
-                break;
-
-
-            // possible future use
-            // case KILL:
-            // case SHIELD:
-            // case NUM_ENTER:
 
             default:
                 break;
@@ -439,36 +284,15 @@ public class Game implements Runnable, KeyListener {
     // animation-thread, we synchronize on the same intrinsic lock. processGameOpsQueue() is also synchronized.
     @Override
     public void keyReleased(KeyEvent e) {
-        Falcon falcon = CommandCenter.getInstance().getFalcon();
+
         int keyCode = e.getKeyCode();
         //show the key-code in the console
         System.out.println(keyCode);
 
         switch (keyCode) {
-            case FIRE:
-                synchronized (this){
-                    CommandCenter.getInstance().getOpsQueue().enqueue(new Bullet(falcon), GameOp.Action.ADD);
-                }
-                Sound.playSound("thump.wav");
-                break;
-            case NUKE:
-                if (CommandCenter.getInstance().getFalcon().getNukeMeter() > 0){
-                    synchronized (this) {
-                        CommandCenter.getInstance().getOpsQueue().enqueue(new Nuke(falcon), GameOp.Action.ADD);
-                    }
-                    Sound.playSound("nuke.wav");
-                    CommandCenter.getInstance().getFalcon().setNukeMeter(0);
-                }
-                break;
+
             //releasing either the LEFT or RIGHT arrow key will set the TurnState to IDLE
             case LEFT:
-            case RIGHT:
-                falcon.setTurnState(Falcon.TurnState.IDLE);
-                break;
-            case UP:
-                falcon.setThrusting(false);
-                soundThrust.stop();
-                break;
 
             case MUTE:
                 CommandCenter.getInstance().setMuted(!CommandCenter.getInstance().isMuted());

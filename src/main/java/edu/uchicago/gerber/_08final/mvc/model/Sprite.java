@@ -1,24 +1,15 @@
 package edu.uchicago.gerber._08final.mvc.model;
 
-import edu.uchicago.gerber._08final.mvc.controller.CommandCenter;
 import edu.uchicago.gerber._08final.mvc.controller.Game;
-
-import java.awt.*;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-
-import edu.uchicago.gerber._08final.mvc.controller.GameOp;
-import edu.uchicago.gerber._08final.mvc.controller.Utils;
 import lombok.Data;
-import lombok.experimental.Tolerate;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
 
 //the lombok @Data gives us automatic getters and setters on all members
 
@@ -35,16 +26,9 @@ public abstract class Sprite implements Movable {
 
     //every sprite has a team: friend, foe, floater, or debris.
     private Team team;
-    //the radius of circumscribing/inscribing circle
-    private int radius;
-
-    //orientation from 0-359
-    private int orientation;
-    //natural mortality (short-lived sprites only)
-    private int expiry;
-
-    //some sprites spin, such as floaters and asteroids
-    private int spin;
+    private int lifeSpan = 0; //timer
+    private int width;
+    private int height;
 
 
     //these are Cartesian points used to draw the polygon in vector mode.
@@ -54,6 +38,7 @@ public abstract class Sprite implements Movable {
 
     //used for vector rendering
     private Color color;
+    private Rectangle[] bounds;
 
     //Either you use the cartesian points and color above (vector), or you can use the BufferedImages here (raster).
     //Keys in this map can be any object (?) you want. See Falcon and WhiteCloudDebris for example implementations.
@@ -61,13 +46,13 @@ public abstract class Sprite implements Movable {
 
 
     //constructor
-    public Sprite() {
+    public Sprite(int width, int height) {
 
         //place the sprite at some random location in the game-space at instantiation
         setCenter(new Point(Game.R.nextInt(Game.DIM.width),
                 Game.R.nextInt(Game.DIM.height)));
-
-
+        setWidth(width);
+        setHeight(height);
     }
 
 
@@ -83,7 +68,12 @@ public abstract class Sprite implements Movable {
             setCenter(new Point(1, center.y));
         //left-bounds reached
         } else if (center.x < 0) {
-            setCenter(new Point(Game.DIM.width - 1, center.y));
+            if(this instanceof Obstacle){
+                // obstacle moves out of frame
+                ((Obstacle) this).alive = false;
+            }else{
+                setCenter(new Point(Game.DIM.width - 1, center.y));
+            }
         //bottom-bounds reached
         } else if (center.y > Game.DIM.height) {
             setCenter(new Point(center.x, 1));
@@ -97,35 +87,10 @@ public abstract class Sprite implements Movable {
             setCenter(new Point((int) newXPos, (int) newYPos));
         }
 
-        //expire (decrement expiry) on short-lived objects only
-        //the default value of expiry is zero, so this block will only apply to expiring sprites
-        if (expiry > 0) expire();
-
-        //if a sprite spins, adjust its orientation
-        //the default value of spin is zero, therefore non-spinning objects will not call this block.
-        if (spin != 0) orientation += spin;
-
-
-    }
-
-    private void expire() {
-
-        //if a short-lived sprite has an expiry of one, it commits suicide by enqueuing itself (this) onto the
-        //opsList with an operation of REMOVE
-        if (expiry == 1) {
-            CommandCenter.getInstance().getOpsQueue().enqueue(this, GameOp.Action.REMOVE);
-        }
-        //and then decrements in all cases
-        expiry--;
-
+        lifeSpan++;
     }
 
 
-    //utility method used by extending (thus protected keyword) classes to produce random pos/neg values
-    protected int somePosNegValue(int seed) {
-        int randomNumber = Game.R.nextInt(seed);
-        return (randomNumber % 2 == 0) ? randomNumber : -randomNumber;
-    }
 
     //A protected sprite will not be destroyed upon collision
     @Override
@@ -153,27 +118,29 @@ public abstract class Sprite implements Movable {
     //https://www.tabnine.com/code/java/methods/java.awt.geom.AffineTransform/rotate
     protected void renderRaster(Graphics2D g2d, BufferedImage bufferedImage) {
 
-        if (bufferedImage ==  null) return;
+        if (bufferedImage ==  null) {
+            System.out.println("Image not found");
+            return;
+        }
 
         int centerX = getCenter().x;
         int centerY = getCenter().y;
-        int width = getRadius() * 2;
-        int height = getRadius() * 2;
-        double angleRadians = Math.toRadians(getOrientation());
-
+        int width = this.width;
+        int height = this.height;
         AffineTransform oldTransform = g2d.getTransform();
+        //System.out.println("center X: "+centerX+ "  center Y: "+centerY+" width: "+width+" height: "+height);
         try {
             double scaleX = width * 1.0 / bufferedImage.getWidth();
             double scaleY = height * 1.0 / bufferedImage.getHeight();
-
+            //double scaleX = 0.25;
+            //double scaleY = 0.25;
+            //System.out.println("scaleX: "+scaleX+" scaleY: "+scaleY);
             AffineTransform affineTransform = new AffineTransform( oldTransform );
             if ( centerX != 0 || centerY != 0 ) {
                 affineTransform.translate( centerX, centerY );
             }
             affineTransform.scale( scaleX, scaleY );
-            if ( angleRadians != 0 ) {
-                affineTransform.rotate( angleRadians );
-            }
+
             affineTransform.translate( -bufferedImage.getWidth() / 2.0, -bufferedImage.getHeight() / 2.0 );
 
             g2d.setTransform( affineTransform );
@@ -184,72 +151,4 @@ public abstract class Sprite implements Movable {
 
         }
     }
-
-    protected void renderVector(Graphics g) {
-
-        //set the graphics context color to the color of the sprite
-        g.setColor(color);
-
-        // To render this Sprite in vector mode, we need to, 1: convert raw cartesians to raw polars, 2: rotate polars
-        // for orientation of sprite. 3: Convert back to cartesians 4: adjust for center-point (location).
-        // and 5: pass the cartesian-x and cartesian-y coords as arrays, along with length, to g.drawPolygon().
-
-        //1: convert raw cartesians to raw polars (used later in stream below).
-        //The reason we convert cartesian-points to polar-points is that it's much easier to rotate polar-points
-        List<PolarPoint> polars = Utils.cartesianToPolar(getCartesians());
-
-        //2: rotate raw polars given the orientation of the sprite.
-        Function<PolarPoint, PolarPoint> rotatePolarByOrientation =
-                pp -> new PolarPoint(
-                        pp.getR(),
-                        pp.getTheta() + Math.toRadians(getOrientation()) //rotated Theta
-                );
-
-        //3: convert the rotated polars back to cartesians
-        Function<PolarPoint, Point> polarToCartesian =
-                pp -> new Point(
-                        (int)  (pp.getR() * getRadius() * Math.sin(pp.getTheta())),
-                        (int)  (pp.getR() * getRadius() * Math.cos(pp.getTheta())));
-
-        //4: adjust the cartesians for the location (center-point) of the sprite.
-        // the reason we subtract the y-value has to do with how Java plots the vertical axis for
-        // graphics (from top to bottom)
-        Function<Point, Point> adjustForLocation =
-                p -> new Point(
-                         getCenter().x + p.x,
-                         getCenter().y - p.y);
-
-
-
-
-        //5: draw the polygon using the List of raw polars from above, applying mapping transforms as required
-        g.drawPolygon(
-                polars.stream()
-                        .map(rotatePolarByOrientation)
-                        .map(polarToCartesian)
-                        .map(adjustForLocation)
-                        .map(pnt -> pnt.x)
-                        .mapToInt(Integer::intValue)
-                        .toArray(),
-
-                polars.stream()
-                        .map(rotatePolarByOrientation)
-                        .map(polarToCartesian)
-                        .map(adjustForLocation)
-                        .map(pnt -> pnt.y)
-                        .mapToInt(Integer::intValue)
-                        .toArray(),
-
-                polars.size());
-
-        //for debugging center-point and collision. Feel free to remove these three lines.
-        //#########################################
-        //g.setColor(Color.GRAY);
-        //g.fillOval(getCenter().x - 1, getCenter().y - 1, 2, 2);
-        //g.drawOval(getCenter().x - getRadius(), getCenter().y - getRadius(), getRadius() *2, getRadius() *2);
-        //#########################################
-    }
-
-
-
 }

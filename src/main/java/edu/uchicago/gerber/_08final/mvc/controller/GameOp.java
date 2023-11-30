@@ -24,3 +24,4 @@ public class GameOp {
     private Action action;
 
 }
+
