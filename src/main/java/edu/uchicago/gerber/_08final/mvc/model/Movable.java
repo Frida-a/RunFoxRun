@@ -1,6 +1,7 @@
 package edu.uchicago.gerber._08final.mvc.model;
 
 import java.awt.*;
+import java.util.List;
 
 public interface Movable {
 
@@ -11,7 +12,7 @@ public interface Movable {
 	void draw(Graphics g);
 
 	//for collision detection
-	Rectangle[] getBounds();
+	List<Rectangle> getBounds();
 	boolean isProtected();
 	Team getTeam();
 

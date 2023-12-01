@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -38,7 +40,7 @@ public abstract class Sprite implements Movable {
 
     //used for vector rendering
     private Color color;
-    private Rectangle[] bounds;
+    private List<Rectangle> bounds = new LinkedList<>();
 
     //Either you use the cartesian points and color above (vector), or you can use the BufferedImages here (raster).
     //Keys in this map can be any object (?) you want. See Falcon and WhiteCloudDebris for example implementations.
@@ -86,6 +88,11 @@ public abstract class Sprite implements Movable {
             double newYPos = center.y + getDeltaY();
             setCenter(new Point((int) newXPos, (int) newYPos));
         }
+        //move bounding boxes
+        for (Rectangle bound: bounds){
+            bound.translate((int)getDeltaX(), (int)getDeltaY());
+            //not very precise
+        }
 
         lifeSpan++;
     }
@@ -113,7 +120,13 @@ public abstract class Sprite implements Movable {
         return bufferedImage;
     }
 
+    public void drawBoundingBox(Graphics2D g2d){
+        //for debug
+        for (Rectangle bound : bounds){
+            g2d.draw(bound);
+        }
 
+    }
 
     //https://www.tabnine.com/code/java/methods/java.awt.geom.AffineTransform/rotate
     protected void renderRaster(Graphics2D g2d, BufferedImage bufferedImage) {
@@ -150,5 +163,6 @@ public abstract class Sprite implements Movable {
             g2d.setTransform( oldTransform );
 
         }
+        // drawBoundingBox(g2d);
     }
 }

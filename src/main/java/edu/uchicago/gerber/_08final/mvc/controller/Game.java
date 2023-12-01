@@ -139,6 +139,7 @@ public class Game implements Runnable, KeyListener {
             if(type < 0){// 50% chance of adding no obstacles
                 return;
             }
+            //int type = 0;
             System.out.println("obs type is: "+ type);
             int centerX = 1099, centerY = 0, imgWidth = 100, imgHeight = 200;
             switch (type){
@@ -178,8 +179,24 @@ public class Game implements Runnable, KeyListener {
         Point pntFriendCenter, pntFoeCenter;
         int radFriend, radFoe;
 
-        //This has order-of-growth of O(n^2), there is no way around this.
-        //TODO collision between Friend and Foe
+        for (Movable movFriend : CommandCenter.getInstance().getMovFriends()){
+            if (movFriend instanceof BackGround){
+                continue;
+            }
+            for (Movable movFoe : CommandCenter.getInstance().getMovFoes()){
+                //detect collision
+                for( Rectangle friendBound : movFriend.getBounds()){
+                    for (Rectangle foeBound: movFoe.getBounds()){
+                        if (friendBound.intersects(foeBound)){
+                            //collision found
+                            CommandCenter.getInstance().getOpsQueue().enqueue(movFriend, GameOp.Action.REMOVE);
+                        }
+                    }
+                }
+            }
+        }
+
+
         processGameOpsQueue();
 
     }//end meth
@@ -205,10 +222,10 @@ public class Game implements Runnable, KeyListener {
             switch (mov.getTeam()) {
                 case FRIEND:
                     if (action == GameOp.Action.ADD) {
-                        System.out.println("Fox to add");
+                        // System.out.println("Fox to add");
                         CommandCenter.getInstance().getMovFriends().add(mov);
                     } else { //GameOp.Operation.REMOVE
-                        System.out.println("Fox removed from queue");
+                        // System.out.println("Fox removed from queue");
                         if (mov instanceof Fox) {
                             CommandCenter.getInstance().initFoxAndDecrementNumb();
                         } else {

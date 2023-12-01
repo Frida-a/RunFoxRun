@@ -48,7 +48,7 @@ public class GamePanel extends Panel {
         initFontInfo();
         gameFrame.setSize(dim);
         //change the name of the game-frame to your game name
-        gameFrame.setTitle("FOX RUN");
+        gameFrame.setTitle("RUN FOX RUN");
         gameFrame.setResizable(false);
         gameFrame.setVisible(true);
         setFocusable(true);

@@ -1,5 +1,7 @@
 package edu.uchicago.gerber._08final.mvc.model;
 
+import edu.uchicago.gerber._08final.mvc.controller.Game;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -8,9 +10,6 @@ import java.util.Map;
 public class Fox extends Sprite {
 
     //static fields
-    private final Rectangle[] bounds = {
-            new Rectangle(getCenter().x+ 30, getCenter().y + 59, 29, 18),
-    };
     private int stepTimer = 0; //̤count step when running, used to swap images
     private int jumpTimer = 0; //count step when jumping, used to swap images
     //private final int JUMP_HIGHT = 500; //highest y when jumping
@@ -30,7 +29,8 @@ public class Fox extends Sprite {
     public Fox(){
         super(124, 43);
         setTeam(Team.FRIEND);
-        setBounds(bounds);
+        setCenter(new Point(Game.DIM.width / 5, getCurrentHeight()));
+        getBounds().add(new Rectangle(getCenter().x, getCenter().y - 21, 62, 32));
         Map<Integer, BufferedImage> rasterMap = new HashMap<>();
         rasterMap.put(0, loadGraphic("/imgs/fox/run1.png") );
         rasterMap.put(1, loadGraphic("/imgs/fox/run2.png") );
@@ -65,6 +65,8 @@ public class Fox extends Sprite {
                 jumpTimer = 0;
                 int centerX = getCenter().x;
                 setCenter(new Point(centerX, lowestHeight));
+                getBounds().remove(0);
+                getBounds().add(new Rectangle(getCenter().x, getCenter().y - 21, 62, 32));
             }
         }
     }

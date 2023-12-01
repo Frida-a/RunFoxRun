@@ -66,7 +66,7 @@ public class CommandCenter {
 		setPaused(false);
 		//set to one greater than number of fox lives in your game as initFoxAndDecrementNum() also decrements
 
-		setNumFoxes(4);
+		setNumFoxes(2);
 		initFoxAndDecrementNumb();
 		opsQueue.enqueue(bgImage1, GameOp.Action.ADD);
 		//opsQueue.enqueue(bgImage2, GameOp.Action.ADD);
@@ -82,7 +82,7 @@ public class CommandCenter {
 	public void initFoxAndDecrementNumb(){
 		numFoxes--;
 		if(isGameOver()) return;
-		fox.setCenter(new Point(Game.DIM.width / 5, fox.getCurrentHeight()));
+		// fox.setCenter(new Point(Game.DIM.width / 5, fox.getCurrentHeight()));
 		fox.setDeltaX(0);
 		fox.setDeltaY(0);
 	}
