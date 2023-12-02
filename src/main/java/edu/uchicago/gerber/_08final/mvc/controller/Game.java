@@ -139,6 +139,16 @@ public class Game implements Runnable, KeyListener {
             if(type < 0){// 50% chance of adding no obstacles
                 return;
             }
+            // check if current location around has a pit
+            int bgCenterX = CommandCenter.getInstance().getBgImage1().getCenter().x;
+            int currentInterval = (899 - bgCenterX) / 100 + 12;
+            System.out.println("current interval : "+ currentInterval);
+            for(int idx = currentInterval-3 ;idx <= currentInterval +3; idx++){
+                if(CommandCenter.getInstance().getBgImage1().hasPits(idx)){
+                    System.out.println("remove obstacle because of pit");
+                    return;
+                }
+            }
             //int type = 0;
             //System.out.println("obs type is: "+ type);
             int centerX = 1099, centerY = 0, imgWidth = 100, imgHeight = 200;

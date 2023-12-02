@@ -86,6 +86,8 @@ public class CommandCenter {
 		// fox.setCenter(new Point(Game.DIM.width / 5, fox.getCurrentHeight()));
 		fox.setDeltaX(0);
 		fox.setDeltaY(0);
+		movFoes.clear();
+		bgImage1.clearPits();
 	}
 
 

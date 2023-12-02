@@ -15,7 +15,7 @@ public class BackGround extends Sprite{
     private final double MOVE_SPEED = 10.0;
     private final int groundLevel = 685;
 
-    private static Map<Integer, Pit> pits = new HashMap<>();
+    public static Map<Integer, Pit> pits = new HashMap<>();
     // Pits on background mapped with its location index
 
 
@@ -33,7 +33,14 @@ public class BackGround extends Sprite{
         //spawnPits(1);
         // cannot spawn the pits in the constructor, the singleton CommandCenter would try to init again and again
     }
+    public void clearPits(){
+        pits.clear();
+        //TODO clear Pits objects
+    }
 
+    public boolean hasPits(int idx){
+        return pits.containsKey(idx);
+    }
     private void spawnPits(int times){
 
         for (int i = 0; i < times; i++){
@@ -45,11 +52,15 @@ public class BackGround extends Sprite{
                 Pit current = spawnOnePit();
                 System.out.println("at "+intervalidx+" !");
                 pits.put(intervalidx, current);
+                current.setIdx(intervalidx);
                 //set center for the pit
                 int centerX = (intervalidx - 11) * 100 + this.getCenter().x + 50;
                 int centerY = 685 + current.getHeight()/2;
                 current.setCenter(new Point(centerX, centerY));
                 current.setDeltaX(-MOVE_SPEED);
+                //set bounding box for pits
+                System.out.println("set bb for pits");
+                current.getBounds().add(new Rectangle(centerX , centerY - current.getHeight()/2 + 5, 50, 70));
             }
         }
     }
@@ -60,13 +71,13 @@ public class BackGround extends Sprite{
         int height = 45;
         switch (type){
             case 0:
-                height = 72;
+                height = 144;
                 break;
             case 1:
-                height = 45;
+                height = 144;
                 break;
             case 2:
-                height = 59;
+                height = 120;
                 break;
             default:
                 break;
@@ -82,22 +93,24 @@ public class BackGround extends Sprite{
         for(Integer i: pits.keySet()){
             Pit current = pits.get(i);
             int centerX = current.getCenter().x;
-            System.out.println("pits center x: "+current.getCenter().x);
+            //System.out.println("pits center x: "+current.getCenter().x);
             if(centerX + 50 > 0){
                 current.renderRaster((Graphics2D) g, current.getRasterMap().get(0));
             }
 
         }
+        //System.out.println("pits size: " + pits.size());
     }
 
     private void removePits(){
         for (Integer i : pits.keySet()) {
             Pit current = pits.get(i);
+            pits.remove(i);
 
-            if(current.getCenter().x + 150 < 0){ // if input 50 there will be a concurrent modification exception
-                pits.remove(i);
-                System.out.println("pits "+ i + "removed from bg map");
-            }
+//            if(current.getCenter().x + 150 < 0){ // if input 50 there will be a concurrent modification exception
+//                pits.remove(i);
+//                System.out.println("pits "+ i + "removed from bg map");
+//            }
 
         }
     }
@@ -106,9 +119,9 @@ public class BackGround extends Sprite{
     @Override
     public void move(){
         if(getCenter().x < 0){
-            removePits();
+            //removePits();
             super.move();
-            spawnPits(3);
+            spawnPits(2);
         }else{
             super.move();
         }
