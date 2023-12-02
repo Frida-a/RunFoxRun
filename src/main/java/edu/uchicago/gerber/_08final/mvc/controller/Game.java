@@ -39,7 +39,6 @@ public class Game implements Runnable, KeyListener {
     private static final int
             PAUSE = 80, // p key
             QUIT = 81, // q key
-            LEFT = 37, // rotate left; left arrow
 
             START = 83, // s key
             JUMP = 32, // space key
@@ -95,7 +94,6 @@ public class Game implements Runnable, KeyListener {
             gamePanel.update(gamePanel.getGraphics());
 
             checkCollisions();
-            checkNewLevel();
             checkObstacles();
 
 
@@ -127,10 +125,9 @@ public class Game implements Runnable, KeyListener {
         // check if current location around has a pit
         int bgCenterX = CommandCenter.getInstance().getBgImage1().getCenter().x;
         int currentInterval = (899 - bgCenterX) / 100 + 12;
-        // System.out.println("current interval : "+ currentInterval);
+
         for(int idx = currentInterval-1 ;idx <= currentInterval +1; idx++){
             if(CommandCenter.getInstance().getBgImage1().hasPits(idx)){
-                // System.out.println("remove obstacle because of pit");
                 return;
             }
         }
@@ -140,8 +137,7 @@ public class Game implements Runnable, KeyListener {
             if(type < 0){// 50% chance of adding no obstacles
                 return;
             }
-            //int type = 0;
-            //System.out.println("obs type is: "+ type);
+
             int centerX = 1099, centerY = 0, imgWidth = 100, imgHeight = 200;
             switch (type){
                 case 0:
@@ -175,7 +171,6 @@ public class Game implements Runnable, KeyListener {
                 && CommandCenter.getInstance().getFrame() % Obstacle.SPAWN_NEW_OBSTACLE > 5
          && CommandCenter.getInstance().getFrame() % Obstacle.SPAWN_NEW_OBSTACLE < 45){
             // spawn coins
-            // System.out.println("spawn coins");
             CommandCenter.getInstance().getOpsQueue().enqueue(new Coin(), GameOp.Action.ADD);
         }
         if(CommandCenter.getInstance().getFrame() % BonusCoin.SPAWN_BOUNS_COIN == 0){
@@ -186,9 +181,6 @@ public class Game implements Runnable, KeyListener {
 
 
     private void checkCollisions() {
-
-        Point pntFriendCenter, pntFoeCenter;
-        int radFriend, radFoe;
 
         for (Movable movFriend : CommandCenter.getInstance().getMovFriends()){
             if (movFriend instanceof BackGround){
@@ -215,7 +207,7 @@ public class Game implements Runnable, KeyListener {
                             }else{
                                 CommandCenter.getInstance().setScore(curScore + 100);
                             }
-                            // System.out.println("score is : "+curScore);
+
                             CommandCenter.getInstance().getOpsQueue().enqueue(movCoin, GameOp.Action.REMOVE);
                         }
                     }
@@ -249,10 +241,10 @@ public class Game implements Runnable, KeyListener {
             switch (mov.getTeam()) {
                 case FRIEND:
                     if (action == GameOp.Action.ADD) {
-                        // System.out.println("Fox to add");
+
                         CommandCenter.getInstance().getMovFriends().add(mov);
                     } else { //GameOp.Operation.REMOVE
-                        // System.out.println("Fox removed from queue");
+
                         if (mov instanceof Fox) {
                             CommandCenter.getInstance().initFoxAndDecrementNumb();
                         } else {
@@ -262,10 +254,10 @@ public class Game implements Runnable, KeyListener {
                     break;
                 case FOE:
                     if (action == GameOp.Action.ADD){
-                        //System.out.println("FOE to add");
+
                         CommandCenter.getInstance().getMovFoes().add(mov);
                     }else{
-                        //System.out.println("FOE removed from queue");
+
                         CommandCenter.getInstance().getMovFoes().remove(mov);
 
                     }
@@ -279,6 +271,7 @@ public class Game implements Runnable, KeyListener {
                             System.out.println("BousCoin removed from list");
                         }
                         //Sound.playSound("coin.wav");
+                        //You can turn it on, but it's a little loud
                     }
                     break;
 
@@ -288,9 +281,6 @@ public class Game implements Runnable, KeyListener {
 
 
 
-    private void checkNewLevel() {
-
-    }
 
 
     // Varargs for stopping looping-music-clips
@@ -314,7 +304,7 @@ public class Game implements Runnable, KeyListener {
 
         switch (keyCode) {
             case JUMP:
-                //System.out.println("JUMP pressed");
+
                 if(fox.isJumping()){
                     int currentJump = CommandCenter.getInstance().getNumJumps();
                     if(currentJump > 0){
@@ -357,10 +347,6 @@ public class Game implements Runnable, KeyListener {
         //System.out.println(keyCode);
 
         switch (keyCode) {
-
-            //releasing either the LEFT or RIGHT arrow key will set the TurnState to IDLE
-            case LEFT:
-
             case MUTE:
                 CommandCenter.getInstance().setMuted(!CommandCenter.getInstance().isMuted());
 

@@ -3,11 +3,7 @@ package edu.uchicago.gerber._08final.mvc.view;
 import edu.uchicago.gerber._08final.mvc.controller.CommandCenter;
 import edu.uchicago.gerber._08final.mvc.controller.Game;
 import edu.uchicago.gerber._08final.mvc.model.*;
-
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,7 +21,6 @@ public class GamePanel extends Panel {
     private int fontWidth;
     private int fontHeight;
 
-    //used to draw number of ships remaining
 
     //used for double-buffering
     private Image imgOff;
@@ -80,10 +75,6 @@ public class GamePanel extends Panel {
                 Game.DIM.height  - (fontHeight + 22));
 
     }
-
-
-
-
 
 
     public void update(Graphics g) {

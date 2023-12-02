@@ -1,7 +1,6 @@
 package edu.uchicago.gerber._08final.mvc.model;
 
 import edu.uchicago.gerber._08final.mvc.controller.Game;
-import lombok.Data;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,20 +12,18 @@ public class Fox extends Sprite {
     //static fields
     private int stepTimer = 0; //̤count step when running, used to swap images
     private int jumpTimer = 0; //count step when jumping, used to swap images
-    //private final int JUMP_HIGHT = 500; //highest y when jumping
-    //private final int MAX_JUMPSPEED = -10; //initial jumping speed, moving up means the speed is negative
 
     private final int lowestHeight = 685; // lowest height on the ground
-    private final int GRAVITY_CONSTANT = 3;
+    private final int GRAVITY_CONSTANT = 3; // used to control jumping
+    private final int MAX_JUMP_TIME = 11;// used to control jumping
     public static final int INITIAL_SPAWN_TIME = 46;
     private int invisible;
-    private final int MAX_JUMP_TIME = 11;
+
 
     //fox's motion states
     public enum MotionState{
         RUNNING,
         JUMPING,
-        INVISIBLE,
     }
     private MotionState currentState = MotionState.RUNNING;
 
@@ -120,14 +117,12 @@ public class Fox extends Sprite {
             }
         }else{
             //fox jumping
-            // System.out.println("FOX Jumping: speed: "+ jumpSpeed);
             double currentSpeed = getDeltaY();
             int index;
 
             if(currentSpeed < 0){
                 //jumping up
                 index = 5 + (int)currentSpeed * 5 / getMaxSpeed();
-                // System.out.println("jumpTimer: "+jumpTimer);
                 if(index == 5){
                     index--; // jumpTimer range [0,4]
                 }

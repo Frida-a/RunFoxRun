@@ -6,6 +6,7 @@ import edu.uchicago.gerber._08final.mvc.controller.GameOp;
 
 import java.awt.*;
 
+// Bigger floating coins, they are rarer and have more scores
 public class BonusCoin extends Coin{
     public static final int SPAWN_BOUNS_COIN = Game.FRAMES_PER_SECOND * 3;
     private int stepTimer = 0;
@@ -45,7 +46,6 @@ public class BonusCoin extends Coin{
                 stepTimer = stepTimer % 4;//4 images in total
             }
         }else{
-            System.out.println("Bouns Coin remove request sent");
             CommandCenter.getInstance().getOpsQueue().enqueue(this, GameOp.Action.REMOVE);
         }
 

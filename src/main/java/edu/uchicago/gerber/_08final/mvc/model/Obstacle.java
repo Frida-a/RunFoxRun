@@ -12,8 +12,6 @@ import java.util.Map;
 
 public class Obstacle extends Sprite {
 
-    //TODO: set bounds
-
 
     private final double MOVE_SPEED = 10.0;
     public boolean alive = true;

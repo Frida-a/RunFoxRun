@@ -33,7 +33,6 @@ public class CommandCenter {
 	private final Fox fox = new Fox();
 
 	private BackGround bgImage1 = new BackGround(new Point(899, 450));
-	//private  final BackGround bgImage2 = new BackGround(new Point(1100, 450));
 
 	//lists containing our movables subdivided by team
 	private final List<Movable> movFriends = new LinkedList<>();
@@ -41,7 +40,6 @@ public class CommandCenter {
 	private final List<Movable> movCoins = new LinkedList<>();
 
 	private final GameOpsQueue opsQueue = new GameOpsQueue();
-
 
 	//for sound playing. Limit the number of threads to 5 at a time.
 	private final ThreadPoolExecutor soundExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
@@ -72,20 +70,14 @@ public class CommandCenter {
 		setNumFoxes(4);
 		initFoxAndDecrementNumb();
 		opsQueue.enqueue(bgImage1, GameOp.Action.ADD);
-		//opsQueue.enqueue(bgImage2, GameOp.Action.ADD);
 		//add the fox to the movFriends list
 		opsQueue.enqueue(fox, GameOp.Action.ADD);
-
-
-
-
 	}
 
 
 	public void initFoxAndDecrementNumb(){
 		numFoxes--;
 		if(isGameOver()) return;
-		// fox.setCenter(new Point(Game.DIM.width / 5, fox.getCurrentHeight()));
 		Sound.playSound("shipspawn.wav");
 		fox.setInvisible(Fox.INITIAL_SPAWN_TIME/4);
 		fox.setDeltaX(0);
@@ -110,6 +102,5 @@ public class CommandCenter {
 	public boolean isGameOver() {		//if the number of foxes is zero, then game over
 		return numFoxes < 1;
 	}
-
 
 }

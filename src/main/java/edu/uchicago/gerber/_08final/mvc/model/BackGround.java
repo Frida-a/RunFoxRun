@@ -1,19 +1,16 @@
 package edu.uchicago.gerber._08final.mvc.model;
-
-import edu.uchicago.gerber._02arrays.P7_5;
 import edu.uchicago.gerber._08final.mvc.controller.CommandCenter;
-import edu.uchicago.gerber._08final.mvc.controller.Game;
 import edu.uchicago.gerber._08final.mvc.controller.GameOp;
-import javafx.util.Pair;
 import java.util.concurrent.ThreadLocalRandom;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
-import java.util.List;
 
+//Background Image is a Movable class as the image move from right to left
+//the game frame size is 1100 * 900, I use an image of size 2200 * 900 and set the center (1099, 450) to make it move seamlessly
+//Pits are considered parts of the background and this class is responsible for spawning pits
 public class BackGround extends Sprite{
     private final double MOVE_SPEED = 10.0;
-    private final int groundLevel = 685;
 
     public static Map<Integer, Pit> pits = new HashMap<>();
     // Pits on background mapped with its location index
@@ -28,14 +25,12 @@ public class BackGround extends Sprite{
         rasterMap.put(0, loadGraphic("/imgs/background.png") );
 
         setRasterMap(rasterMap);
-        //System.out.println("bg init time");
-        //System.out.println("pits num: "+ pits.size());
+
         //spawnPits(1);
         // cannot spawn the pits in the constructor, the singleton CommandCenter would try to init again and again
     }
     public void clearPits(){
         pits.clear();
-        //TODO clear Pits objects
     }
 
     public boolean hasPits(int idx){
@@ -44,13 +39,11 @@ public class BackGround extends Sprite{
     private void spawnPits(int times){
 
         for (int i = 0; i < times; i++){
-            //System.out.println("spawn times left" + i);
+
             int intervalidx = ThreadLocalRandom.current().nextInt(12, 22);
-            // int intervalidx = 21;
-            //System.out.println("pits id " + intervalidx);
+
             if (!pits.containsKey(intervalidx)){
                 Pit current = spawnOnePit();
-                System.out.println("at "+intervalidx+" !");
                 pits.put(intervalidx, current);
                 current.setIdx(intervalidx);
                 //set center for the pit
@@ -59,7 +52,6 @@ public class BackGround extends Sprite{
                 current.setCenter(new Point(centerX, centerY));
                 current.setDeltaX(-MOVE_SPEED);
                 //set bounding box for pits
-                System.out.println("set bb for pits");
                 current.getBounds().add(new Rectangle(centerX , centerY - current.getHeight()/2 + 5, 50, 70));
             }
         }
@@ -84,7 +76,6 @@ public class BackGround extends Sprite{
         }
         Pit current = new Pit(width, height, type);
         CommandCenter.getInstance().getOpsQueue().enqueue(current, GameOp.Action.ADD);
-        System.out.println("spawn one pit "+type);
 
         return current;
     }
@@ -93,33 +84,18 @@ public class BackGround extends Sprite{
         for(Integer i: pits.keySet()){
             Pit current = pits.get(i);
             int centerX = current.getCenter().x;
-            //System.out.println("pits center x: "+current.getCenter().x);
             if(centerX + 50 > 0){
                 current.renderRaster((Graphics2D) g, current.getRasterMap().get(0));
             }
 
         }
-        //System.out.println("pits size: " + pits.size());
     }
 
-    private void removePits(){
-        for (Integer i : pits.keySet()) {
-            Pit current = pits.get(i);
-            pits.remove(i);
-
-//            if(current.getCenter().x + 150 < 0){ // if input 50 there will be a concurrent modification exception
-//                pits.remove(i);
-//                System.out.println("pits "+ i + "removed from bg map");
-//            }
-
-        }
-    }
 
 
     @Override
     public void move(){
         if(getCenter().x < 0){
-            //removePits();
             super.move();
             spawnPits(1);
         }else{

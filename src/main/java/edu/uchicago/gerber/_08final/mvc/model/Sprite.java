@@ -28,18 +28,14 @@ public abstract class Sprite implements Movable {
 
     //every sprite has a team: friend, foe, floater, or debris.
     private Team team;
-    private int lifeSpan = 0; //timer
+    private int lifeSpan = 0; //timer for sprite with multiple images
     private int width;
     private int height;
 
 
-    //these are Cartesian points used to draw the polygon in vector mode.
-    //Once set, their values do not change. It's the job of the renderVector() method to adjust for orientation and
-    // location.
-    private Point[] cartesians;
-
     //used for vector rendering
     private Color color;
+    // 2D rectangles to bound the sprites, used for collision detection
     private List<Rectangle> bounds = new LinkedList<>();
 
     //Either you use the cartesian points and color above (vector), or you can use the BufferedImages here (raster).
@@ -144,13 +140,10 @@ public abstract class Sprite implements Movable {
         int width = this.width;
         int height = this.height;
         AffineTransform oldTransform = g2d.getTransform();
-        //System.out.println("center X: "+centerX+ "  center Y: "+centerY+" width: "+width+" height: "+height);
         try {
             double scaleX = width * 1.0 / bufferedImage.getWidth();
             double scaleY = height * 1.0 / bufferedImage.getHeight();
-            //double scaleX = 0.25;
-            //double scaleY = 0.25;
-            //System.out.println("scaleX: "+scaleX+" scaleY: "+scaleY);
+
             AffineTransform affineTransform = new AffineTransform( oldTransform );
             if ( centerX != 0 || centerY != 0 ) {
                 affineTransform.translate( centerX, centerY );
@@ -167,5 +160,6 @@ public abstract class Sprite implements Movable {
 
         }
         //drawBoundingBox(g2d);
+        // Turn this on for debugging
     }
 }
