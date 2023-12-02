@@ -67,7 +67,7 @@ public class Game implements Runnable, KeyListener {
         gamePanel = new GamePanel(DIM);
         gamePanel.addKeyListener(this); //Game object implements KeyListener
         soundThrust = Sound.clipForLoopFactory("whitenoise.wav");
-        soundBackground = Sound.clipForLoopFactory("music-background.wav");
+        soundBackground = Sound.clipForLoopFactory("bgm.wav");
 
         //fire up the animation thread
         animationThread = new Thread(this); // pass the animation thread a runnable object, the Game object
@@ -140,7 +140,7 @@ public class Game implements Runnable, KeyListener {
                 return;
             }
             //int type = 0;
-            System.out.println("obs type is: "+ type);
+            //System.out.println("obs type is: "+ type);
             int centerX = 1099, centerY = 0, imgWidth = 100, imgHeight = 200;
             switch (type){
                 case 0:
@@ -235,11 +235,15 @@ public class Game implements Runnable, KeyListener {
                     break;
                 case FOE:
                     if (action == GameOp.Action.ADD){
-                        System.out.println("FOE to add");
+                        //System.out.println("FOE to add");
                         CommandCenter.getInstance().getMovFoes().add(mov);
                     }else{
-                        System.out.println("FOE removed from queue");
+                        //System.out.println("FOE removed from queue");
                         CommandCenter.getInstance().getMovFoes().remove(mov);
+                        if (mov instanceof Pit){
+                            System.out.println("Pit removed from queue");
+
+                        }
                     }
 
 
@@ -275,10 +279,10 @@ public class Game implements Runnable, KeyListener {
 
         switch (keyCode) {
             case JUMP:
-                System.out.println("JUMP pressed");
+                //System.out.println("JUMP pressed");
                 fox.setCurrentState("JUMPING");
                 fox.setDeltaY(-fox.getMaxSpeed());
-                Sound.playSound("thump.wav");
+                Sound.playSound("jump.wav");
                 break;
             case PAUSE:
                 CommandCenter.getInstance().setPaused(!CommandCenter.getInstance().isPaused());
@@ -304,7 +308,7 @@ public class Game implements Runnable, KeyListener {
 
         int keyCode = e.getKeyCode();
         //show the key-code in the console
-        System.out.println(keyCode);
+        //System.out.println(keyCode);
 
         switch (keyCode) {
 

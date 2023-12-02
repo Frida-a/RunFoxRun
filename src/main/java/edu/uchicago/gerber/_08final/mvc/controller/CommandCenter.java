@@ -31,7 +31,7 @@ public class CommandCenter {
 
 	private final Fox fox = new Fox();
 
-	private  final BackGround bgImage1 = new BackGround(new Point(899, 450));
+	private BackGround bgImage1 = new BackGround(new Point(899, 450));
 	//private  final BackGround bgImage2 = new BackGround(new Point(1100, 450));
 
 	//lists containing our movables subdivided by team
@@ -54,6 +54,7 @@ public class CommandCenter {
 	public static CommandCenter getInstance(){
 		if (instance == null){
 			instance = new CommandCenter();
+			System.out.println("command Center init");
 		}
 		return instance;
 	}

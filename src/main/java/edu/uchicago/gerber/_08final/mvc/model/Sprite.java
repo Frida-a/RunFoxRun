@@ -163,6 +163,6 @@ public abstract class Sprite implements Movable {
             g2d.setTransform( oldTransform );
 
         }
-        // drawBoundingBox(g2d);
+        drawBoundingBox(g2d);
     }
 }

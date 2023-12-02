@@ -14,7 +14,7 @@ public class Obstacle extends Sprite {
 
     //TODO: set bounds
 
-    private Rectangle[] bounds ;
+
     private final double MOVE_SPEED = 10.0;
     public boolean alive = true;
     public static final int SPAWN_NEW_OBSTACLE = Game.FRAMES_PER_SECOND * 2;
