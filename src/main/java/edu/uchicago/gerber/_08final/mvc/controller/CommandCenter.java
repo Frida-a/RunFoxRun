@@ -37,6 +37,7 @@ public class CommandCenter {
 	//lists containing our movables subdivided by team
 	private final List<Movable> movFriends = new LinkedList<>();
 	private final List<Movable> movFoes = new LinkedList<>();
+	private final List<Movable> movCoins = new LinkedList<>();
 
 	private final GameOpsQueue opsQueue = new GameOpsQueue();
 
@@ -87,6 +88,7 @@ public class CommandCenter {
 		fox.setDeltaX(0);
 		fox.setDeltaY(0);
 		movFoes.clear();
+		movCoins.clear();
 		bgImage1.clearPits();
 	}
 
@@ -99,6 +101,7 @@ public class CommandCenter {
 	private void clearAll(){
 		movFriends.clear();
 		movFoes.clear();
+		movCoins.clear();
 	}
 
 	public boolean isGameOver() {		//if the number of foxes is zero, then game over

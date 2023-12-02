@@ -73,7 +73,10 @@ public abstract class Sprite implements Movable {
             if(this instanceof Obstacle){
                 // obstacle moves out of frame
                 ((Obstacle) this).alive = false;
-            }else{
+            }else if(this instanceof Coin){
+                ((Coin) this).alive = false;
+            }
+            else{
                 setCenter(new Point(Game.DIM.width - 1, center.y));
             }
         //bottom-bounds reached
@@ -93,7 +96,6 @@ public abstract class Sprite implements Movable {
             bound.translate((int)getDeltaX(), (int)getDeltaY());
             //not very precise
         }
-
         lifeSpan++;
     }
 

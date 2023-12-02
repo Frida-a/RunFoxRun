@@ -19,10 +19,7 @@ public class Obstacle extends Sprite {
     public boolean alive = true;
     public static final int SPAWN_NEW_OBSTACLE = Game.FRAMES_PER_SECOND * 2;
 
-    public enum ObstacleType{
-        CACTUS,
-        STONE,
-    }
+
 
     public Obstacle(Point center, int width, int height, int type){
         super(width, height);

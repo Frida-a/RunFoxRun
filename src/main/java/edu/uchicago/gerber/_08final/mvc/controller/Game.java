@@ -108,6 +108,7 @@ public class Game implements Runnable, KeyListener {
             checkNewLevel();
             checkObstacles();
 
+
             //keep track of the frame for development purposes
             CommandCenter.getInstance().incrementFrame();
 
@@ -129,25 +130,25 @@ public class Game implements Runnable, KeyListener {
     } // end run
 
     private void checkObstacles(){
-        spawnNewObstacles();
+        spawnNewObstaclesandCoins();
     }
 
-    private void spawnNewObstacles(){
+    private void spawnNewObstaclesandCoins(){
+        // check if current location around has a pit
+        int bgCenterX = CommandCenter.getInstance().getBgImage1().getCenter().x;
+        int currentInterval = (899 - bgCenterX) / 100 + 12;
+        // System.out.println("current interval : "+ currentInterval);
+        for(int idx = currentInterval-1 ;idx <= currentInterval +1; idx++){
+            if(CommandCenter.getInstance().getBgImage1().hasPits(idx)){
+                System.out.println("remove obstacle because of pit");
+                return;
+            }
+        }
         if (CommandCenter.getInstance().getFrame() % Obstacle.SPAWN_NEW_OBSTACLE == 0) {
             Random r = new Random();
             int type = (r.nextInt()% 5) ;
             if(type < 0){// 50% chance of adding no obstacles
                 return;
-            }
-            // check if current location around has a pit
-            int bgCenterX = CommandCenter.getInstance().getBgImage1().getCenter().x;
-            int currentInterval = (899 - bgCenterX) / 100 + 12;
-            System.out.println("current interval : "+ currentInterval);
-            for(int idx = currentInterval-3 ;idx <= currentInterval +3; idx++){
-                if(CommandCenter.getInstance().getBgImage1().hasPits(idx)){
-                    System.out.println("remove obstacle because of pit");
-                    return;
-                }
             }
             //int type = 0;
             //System.out.println("obs type is: "+ type);
@@ -180,6 +181,12 @@ public class Game implements Runnable, KeyListener {
                     break;
             }
             CommandCenter.getInstance().getOpsQueue().enqueue(new Obstacle(new Point(centerX, centerY), imgWidth,imgHeight, type), GameOp.Action.ADD);
+        } else if (CommandCenter.getInstance().getFrame() % Coin.SPAWN_NEW_COIN == 0
+                && CommandCenter.getInstance().getFrame() % Obstacle.SPAWN_NEW_OBSTACLE > 5
+         && CommandCenter.getInstance().getFrame() % Obstacle.SPAWN_NEW_OBSTACLE < 45){
+            // spawn coins
+            // System.out.println("spawn coins");
+            CommandCenter.getInstance().getOpsQueue().enqueue(new Coin(), GameOp.Action.ADD);
         }
     }
 
@@ -200,6 +207,18 @@ public class Game implements Runnable, KeyListener {
                         if (friendBound.intersects(foeBound)){
                             //collision found
                             CommandCenter.getInstance().getOpsQueue().enqueue(movFriend, GameOp.Action.REMOVE);
+                        }
+                    }
+                }
+            }
+            for (Movable movCoin : CommandCenter.getInstance().getMovCoins()){
+                for( Rectangle friendBound : movFriend.getBounds()){
+                    for(Rectangle coinBound: movCoin.getBounds()){
+                        if (friendBound.intersects(coinBound)){
+                            long curScore = CommandCenter.getInstance().getScore();
+                            CommandCenter.getInstance().setScore(curScore + 100);
+                            // System.out.println("score is : "+curScore);
+                            CommandCenter.getInstance().getOpsQueue().enqueue(movCoin, GameOp.Action.REMOVE);
                         }
                     }
                 }
@@ -250,12 +269,16 @@ public class Game implements Runnable, KeyListener {
                     }else{
                         //System.out.println("FOE removed from queue");
                         CommandCenter.getInstance().getMovFoes().remove(mov);
-                        if (mov instanceof Pit){
-                            System.out.println("Pit removed from queue");
 
-                        }
                     }
-
+                    break;
+                case COIN:
+                    if (action == GameOp.Action.ADD){
+                        CommandCenter.getInstance().getMovCoins().add(mov);
+                    }else{
+                        CommandCenter.getInstance().getMovCoins().remove(mov);
+                    }
+                    break;
 
             }
         }

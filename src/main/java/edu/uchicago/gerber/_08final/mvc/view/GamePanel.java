@@ -60,8 +60,18 @@ public class GamePanel extends Panel {
     // ==============================================================
 
     private void drawFoxStatus(final Graphics graphics){
-        //TODO: put information of fox on the screen
 
+        graphics.setColor(Color.white);
+        graphics.setFont(fontNormal);
+
+        //draw score always
+        graphics.drawString("Score :  " + CommandCenter.getInstance().getScore(), fontWidth, fontHeight);
+
+        //draw the level upper-left corner always
+        String levelText = " Level:  " + CommandCenter.getInstance().getLevel();
+        graphics.drawString(levelText, 20, 30); //upper-left corner
+
+        //TODO: build the status string array with possible messages in middle of screen
     }
 
     //this is used for development, you can remove it from your final game
@@ -118,7 +128,9 @@ public class GamePanel extends Panel {
 
             moveDrawMovables(grpOff,
                     CommandCenter.getInstance().getMovFriends(),//always draw the background first
-                    CommandCenter.getInstance().getMovFoes());
+                    CommandCenter.getInstance().getMovFoes(),
+                    CommandCenter.getInstance().getMovCoins());
+
 
 
             drawNumberFoxesRemaining(grpOff);

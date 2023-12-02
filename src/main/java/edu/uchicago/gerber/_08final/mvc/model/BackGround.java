@@ -121,7 +121,7 @@ public class BackGround extends Sprite{
         if(getCenter().x < 0){
             //removePits();
             super.move();
-            spawnPits(2);
+            spawnPits(1);
         }else{
             super.move();
         }
