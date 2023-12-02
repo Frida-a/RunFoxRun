@@ -73,10 +73,11 @@ public abstract class Sprite implements Movable {
             if(this instanceof Obstacle){
                 // obstacle moves out of frame
                 ((Obstacle) this).alive = false;
+            }else if(this instanceof BonusCoin){
+                ((BonusCoin) this).alive = false;// check the derived class first
             }else if(this instanceof Coin){
                 ((Coin) this).alive = false;
-            }
-            else{
+            }else{
                 setCenter(new Point(Game.DIM.width - 1, center.y));
             }
         //bottom-bounds reached
@@ -165,6 +166,6 @@ public abstract class Sprite implements Movable {
             g2d.setTransform( oldTransform );
 
         }
-        drawBoundingBox(g2d);
+        //drawBoundingBox(g2d);
     }
 }

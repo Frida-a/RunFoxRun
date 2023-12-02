@@ -1,6 +1,7 @@
 package edu.uchicago.gerber._08final.mvc.model;
 
 import edu.uchicago.gerber._08final.mvc.controller.Game;
+import lombok.Data;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -17,14 +18,18 @@ public class Fox extends Sprite {
 
     private final int lowestHeight = 685; // lowest height on the ground
     private final int GRAVITY_CONSTANT = 3;
+    public static final int INITIAL_SPAWN_TIME = 46;
+    private int invisible;
     private final int MAX_JUMP_TIME = 11;
 
     //fox's motion states
     public enum MotionState{
         RUNNING,
         JUMPING,
+        INVISIBLE,
     }
     private MotionState currentState = MotionState.RUNNING;
+
 
     public Fox(){
         super(124, 43);
@@ -41,6 +46,7 @@ public class Fox extends Sprite {
         rasterMap.put(6, loadGraphic("/imgs/fox/jump3.png") );
         rasterMap.put(7, loadGraphic("/imgs/fox/jump4.png") );
         rasterMap.put(8, loadGraphic("/imgs/fox/jump5.png") );
+        rasterMap.put(9, null );
 
         setRasterMap(rasterMap);
 
@@ -48,6 +54,8 @@ public class Fox extends Sprite {
     @Override
     public void move(){
         super.move();
+
+        if (invisible > 0) invisible--;
         if(currentState == MotionState.JUMPING){
             jumpTimer++;
             // fox is jumping currently
@@ -75,6 +83,19 @@ public class Fox extends Sprite {
         return lowestHeight;
     }
 
+
+    public boolean isJumping() {
+
+        if(currentState == MotionState.JUMPING){
+            return true;
+        }
+        return false;
+
+    }
+
+    public void setInvisible(int num){
+        invisible = num;
+    }
     public int getMaxSpeed(){
         return MAX_JUMP_TIME * GRAVITY_CONSTANT;
     }
@@ -88,7 +109,10 @@ public class Fox extends Sprite {
     }
     @Override
     public void draw(Graphics g){
-        if(currentState == MotionState.RUNNING){
+        if (invisible > 0){
+            renderRaster((Graphics2D) g, getRasterMap().get(9));
+        }
+        else if(currentState == MotionState.RUNNING){
             renderRaster((Graphics2D) g, getRasterMap().get(stepTimer));
             if (getLifeSpan() % 3 == 0) {//times 3 to make fox moves slower
                 stepTimer++;

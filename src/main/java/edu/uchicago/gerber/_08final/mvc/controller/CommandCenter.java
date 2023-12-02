@@ -18,6 +18,7 @@ public class CommandCenter {
 
 	private int numFoxes;
 	private  int level;
+	private int numJumps;
 	private  long score;
 	private  boolean paused;
 	private  boolean muted;
@@ -67,8 +68,8 @@ public class CommandCenter {
 		setScore(0);
 		setPaused(false);
 		//set to one greater than number of fox lives in your game as initFoxAndDecrementNum() also decrements
-
-		setNumFoxes(2);
+		setNumJumps(5);
+		setNumFoxes(4);
 		initFoxAndDecrementNumb();
 		opsQueue.enqueue(bgImage1, GameOp.Action.ADD);
 		//opsQueue.enqueue(bgImage2, GameOp.Action.ADD);
@@ -85,6 +86,8 @@ public class CommandCenter {
 		numFoxes--;
 		if(isGameOver()) return;
 		// fox.setCenter(new Point(Game.DIM.width / 5, fox.getCurrentHeight()));
+		Sound.playSound("shipspawn.wav");
+		fox.setInvisible(Fox.INITIAL_SPAWN_TIME/4);
 		fox.setDeltaX(0);
 		fox.setDeltaY(0);
 		movFoes.clear();

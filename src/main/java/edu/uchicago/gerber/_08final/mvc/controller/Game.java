@@ -40,18 +40,10 @@ public class Game implements Runnable, KeyListener {
             PAUSE = 80, // p key
             QUIT = 81, // q key
             LEFT = 37, // rotate left; left arrow
-            RIGHT = 39, // rotate right; right arrow
-            UP = 38, // thrust; up arrow
+
             START = 83, // s key
             JUMP = 32, // space key
-            MUTE = 77, // m-key mute
-
-            NUKE = 78; // n-key mute
-
-    // for possible future use
-    // HYPER = 68, 					// D key
-    //ALIEN = 65;                // A key
-    // SPECIAL = 70; 					// fire special weapon;  F key
+            MUTE = 77; // m-key mute
 
     private final Clip soundThrust;
     private final Clip soundBackground;
@@ -72,8 +64,6 @@ public class Game implements Runnable, KeyListener {
         //fire up the animation thread
         animationThread = new Thread(this); // pass the animation thread a runnable object, the Game object
         animationThread.start();
-
-
     }
 
     // ===============================================
@@ -140,7 +130,7 @@ public class Game implements Runnable, KeyListener {
         // System.out.println("current interval : "+ currentInterval);
         for(int idx = currentInterval-1 ;idx <= currentInterval +1; idx++){
             if(CommandCenter.getInstance().getBgImage1().hasPits(idx)){
-                System.out.println("remove obstacle because of pit");
+                // System.out.println("remove obstacle because of pit");
                 return;
             }
         }
@@ -188,6 +178,10 @@ public class Game implements Runnable, KeyListener {
             // System.out.println("spawn coins");
             CommandCenter.getInstance().getOpsQueue().enqueue(new Coin(), GameOp.Action.ADD);
         }
+        if(CommandCenter.getInstance().getFrame() % BonusCoin.SPAWN_BOUNS_COIN == 0){
+            System.out.println("Spawn Bonus Coin");
+            CommandCenter.getInstance().getOpsQueue().enqueue(new BonusCoin(), GameOp.Action.ADD);
+        }
     }
 
 
@@ -216,7 +210,11 @@ public class Game implements Runnable, KeyListener {
                     for(Rectangle coinBound: movCoin.getBounds()){
                         if (friendBound.intersects(coinBound)){
                             long curScore = CommandCenter.getInstance().getScore();
-                            CommandCenter.getInstance().setScore(curScore + 100);
+                            if(movCoin instanceof BonusCoin){
+                                CommandCenter.getInstance().setScore(curScore + 500);
+                            }else{
+                                CommandCenter.getInstance().setScore(curScore + 100);
+                            }
                             // System.out.println("score is : "+curScore);
                             CommandCenter.getInstance().getOpsQueue().enqueue(movCoin, GameOp.Action.REMOVE);
                         }
@@ -277,6 +275,10 @@ public class Game implements Runnable, KeyListener {
                         CommandCenter.getInstance().getMovCoins().add(mov);
                     }else{
                         CommandCenter.getInstance().getMovCoins().remove(mov);
+                        if( mov instanceof BonusCoin){
+                            System.out.println("BousCoin removed from list");
+                        }
+                        //Sound.playSound("coin.wav");
                     }
                     break;
 
@@ -313,9 +315,20 @@ public class Game implements Runnable, KeyListener {
         switch (keyCode) {
             case JUMP:
                 //System.out.println("JUMP pressed");
-                fox.setCurrentState("JUMPING");
-                fox.setDeltaY(-fox.getMaxSpeed());
-                Sound.playSound("jump.wav");
+                if(fox.isJumping()){
+                    int currentJump = CommandCenter.getInstance().getNumJumps();
+                    if(currentJump > 0){
+                        CommandCenter.getInstance().setNumJumps(currentJump - 1);
+                        fox.setCurrentState("JUMPING");
+                        fox.setDeltaY(-fox.getMaxSpeed());
+                        Sound.playSound("jump.wav");
+                    }
+                }else{
+                    fox.setCurrentState("JUMPING");
+                    fox.setDeltaY(-fox.getMaxSpeed());
+                    Sound.playSound("jump.wav");
+                }
+
                 break;
             case PAUSE:
                 CommandCenter.getInstance().setPaused(!CommandCenter.getInstance().isPaused());

@@ -4,10 +4,11 @@ import edu.uchicago.gerber._08final.mvc.controller.CommandCenter;
 import edu.uchicago.gerber._08final.mvc.controller.Game;
 import edu.uchicago.gerber._08final.mvc.model.*;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
@@ -19,7 +20,7 @@ public class GamePanel extends Panel {
     // FIELDS
     // ==============================================================
     private final Font fontNormal = new Font("SansSerif", Font.BOLD, 12);
-    private final Font fontBig = new Font("SansSerif", Font.BOLD + Font.ITALIC, 36);
+    private final Font fontBig = new Font("SansSerif", Font.BOLD + Font.ITALIC, 48);
     private FontMetrics fontMetrics;
     private int fontWidth;
     private int fontHeight;
@@ -65,13 +66,10 @@ public class GamePanel extends Panel {
         graphics.setFont(fontNormal);
 
         //draw score always
-        graphics.drawString("Score :  " + CommandCenter.getInstance().getScore(), fontWidth, fontHeight);
+        graphics.drawString("Score :  " + CommandCenter.getInstance().getScore(), 20, 20);
+        graphics.drawString("Life Remaining:  " + CommandCenter.getInstance().getNumFoxes(), 20, 35);
+        graphics.drawString("MultiJump Remaining:  " + CommandCenter.getInstance().getNumJumps(), 20, 50);
 
-        //draw the level upper-left corner always
-        String levelText = " Level:  " + CommandCenter.getInstance().getLevel();
-        graphics.drawString(levelText, 20, 30); //upper-left corner
-
-        //TODO: build the status string array with possible messages in middle of screen
     }
 
     //this is used for development, you can remove it from your final game
@@ -83,10 +81,7 @@ public class GamePanel extends Panel {
 
     }
 
-    private void drawMeters(Graphics g){
 
-
-    }
 
 
 
@@ -108,8 +103,7 @@ public class GamePanel extends Panel {
         if (CommandCenter.getInstance().isGameOver()) {
             displayTextOnScreen(grpOff,
                     "GAME OVER",
-                    "use the arrow keys to turn and thrust",
-                    "use the space bar to fire",
+                    "use the space bar to jump",
                     "'S' to Start",
                     "'P' to Pause",
                     "'Q' to Quit",
@@ -133,8 +127,6 @@ public class GamePanel extends Panel {
 
 
 
-            drawNumberFoxesRemaining(grpOff);
-            drawMeters(grpOff);
             drawFoxStatus(grpOff);
 
 
@@ -168,22 +160,7 @@ public class GamePanel extends Panel {
 
 
 
-    // Draw the number of falcons remaining on the bottom-right of the screen.
-    private void drawNumberFoxesRemaining(Graphics g) {
-        int numFoxes = CommandCenter.getInstance().getNumFoxes();
-        while (numFoxes > 0) {
-            drawOneFox(g, numFoxes--);
-        }
-    }
 
-
-    private void drawOneFox(Graphics g, int offSet) {
-
-        g.setColor(Color.ORANGE);
-
-        // TODO: draw remain foxes on the screen
-
-    }
 
     private void initFontInfo() {
         Graphics g = getGraphics();            // get the graphics context for the panel
