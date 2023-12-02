@@ -118,15 +118,10 @@ public class GamePanel extends Panel {
 
         //playing and not paused!
         else {
-
-
             moveDrawMovables(grpOff,
                     CommandCenter.getInstance().getMovFriends(),//always draw the background first
                     CommandCenter.getInstance().getMovFoes(),
                     CommandCenter.getInstance().getMovCoins());
-
-
-
             drawFoxStatus(grpOff);
 
 
