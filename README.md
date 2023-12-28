@@ -1,19 +1,18 @@
-## All homework assignments base-code for Java Programming UChicago MPCS 51036
+## RUN FOX RUN
+![img.png](src/main/java/edu/uchicago/gerber/_08final/img.png)
+Final project for my Unix Class, a Java written Parkour Game. 
 
-This project contains all the base code you will need for your homework (called projects) in Java Programming 51036 -- but not the answers :(
-There are also some simple examples in this project. Each package (e.g. _01control) contains a file called _instructions.txt which contains instructions for each project.
+## version
 
-## the master branch
-
-The master branch is the branch that your graders will grade. No other branch will be graded.
-
-
-## Access
-
-You will fork this project and then push to it as you complete your assignments.
-You may create however many branches you like, but be sure to merge those changes back to master as master is the only branch that the graders will evaluate.
-
-If you don't know how to merge, stay on master...or ask me during office hours and I will show you how to merge.
+My JDK is corretto-1.8 to be compatible with Lombok
 
 
 
+## Game Setting
+
+This is about a fox running.
+The little fox avoids obstacles and pits on the ground by jumping and collects coins to increase its score. Colliding with obstacles will decrease its life, but I have exempted its tail from this rule. You have 5 chances for a double jump. Try to see how far you can run!
+
+## start running
+
+Game.java is the entrance.
